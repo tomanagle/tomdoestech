@@ -1,0 +1,35 @@
+---
+import { profile } from "../data/profile";
+---
+
+<ol class="space-y-6">
+  {
+    profile.workHistory.map((job) => (
+      <li class="grid gap-1 sm:grid-cols-[8rem_1fr] sm:gap-4">
+        <span class="pt-0.5 font-mono text-sm text-zinc-500 dark:text-zinc-400">
+          {job.period}
+        </span>
+        <div class="space-y-1">
+          <h3 class="font-medium">
+            {job.role} ·{" "}
+            {job.url ? (
+              <a
+                href={job.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-accent-600 hover:underline dark:text-accent-400"
+              >
+                {job.company}
+              </a>
+            ) : (
+              <span>{job.company}</span>
+            )}
+          </h3>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400">
+            {job.summary}
+          </p>
+        </div>
+      </li>
+    ))
+  }
+</ol>

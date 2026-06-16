@@ -1,0 +1,66 @@
+---
+title: Realtime Analytics Pipeline
+description: A low-latency event pipeline that ingests, aggregates, and serves product analytics at scale.
+role: Lead engineer
+tech:
+  - TypeScript
+  - Cloudflare Workers
+  - Durable Objects
+  - ClickHouse
+period: "2024"
+links:
+  repo: https://github.com/your-handle/example-project
+  live: https://example.com
+featured: true
+order: 1
+draft: false
+---
+
+import Callout from "../../components/mdx/Callout.astro";
+import CounterDemo from "../../components/demos/CounterDemo.tsx";
+
+## Context & Background
+
+Our product team was flying blind: the existing analytics stack batched events
+on a nightly cron, so a feature shipped in the morning couldn't be evaluated
+until the next day. We needed sub-minute visibility into user behavior without
+standing up a heavyweight data platform or blowing the budget.
+
+The constraints were tight — a small team, an existing Cloudflare footprint,
+and a hard requirement that ingestion never block the user-facing request path.
+
+## Implementation
+
+The pipeline splits into three stages: a thin ingestion Worker, a per-tenant
+aggregation layer on Durable Objects, and a columnar store for historical
+queries.
+
+<Callout type="info">
+  The key insight was treating each tenant's Durable Object as a small,
+  consistent aggregation buffer — flushing to the warehouse on a timer rather
+  than on every event.
+</Callout>
+
+Events are accepted by an edge Worker that does nothing but validate and
+enqueue, keeping p99 ingestion latency in the single-digit milliseconds. A
+Durable Object per tenant maintains rolling counters and flushes batches to
+ClickHouse every few seconds.
+
+Here's a tiny interactive island to prove the MDX → React pipeline works —
+this is a hydrated React component embedded directly in the writeup:
+
+<CounterDemo client:visible />
+
+## What Went Well
+
+Decoupling ingestion from aggregation was the decision that paid off most. The
+edge Worker stayed dumb and fast, and all the interesting logic lived in the
+Durable Objects where state was easy to reason about. We hit sub-minute
+freshness on day one and never had an ingestion-path incident.
+
+## What I'd Do Differently
+
+I'd invest in schema versioning for events much earlier. We hand-rolled
+validation and paid for it when the event shape evolved. I'd also add a dead
+letter queue from the start rather than bolting it on after the first
+mysterious data gap.

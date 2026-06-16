@@ -1,0 +1,24 @@
+---
+interface Props {
+  type?: "info" | "warning" | "success";
+}
+
+const { type = "info" } = Astro.props;
+
+const styles: Record<NonNullable<Props["type"]>, string> = {
+  info: "border-accent-500 bg-accent-50 text-accent-700 dark:bg-accent-500/10 dark:text-accent-100",
+  warning:
+    "border-amber-500 bg-amber-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-200",
+  success:
+    "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-200",
+};
+---
+
+<aside
+  class:list={[
+    "not-prose my-6 rounded-lg border-l-4 px-4 py-3 text-sm leading-relaxed",
+    styles[type],
+  ]}
+>
+  <slot />
+</aside>

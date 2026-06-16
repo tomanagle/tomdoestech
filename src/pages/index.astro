@@ -1,11 +1,58 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import WorkHistory from "../components/WorkHistory.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { profile } from "../data/profile";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const published = await getCollection("projects", ({ data }) =>
+  import.meta.env.PROD ? !data.draft : true,
+);
+const featured = published
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout>
+  <div class="space-y-16">
+    <section class="space-y-5">
+      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        {profile.name}
+      </h1>
+      <p class="max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
+        {profile.bio.intro}
+      </p>
+      <SocialLinks />
+    </section>
+
+    {
+      featured.length > 0 && (
+        <section class="space-y-5">
+          <div class="flex items-baseline justify-between">
+            <h2 class="text-xl font-semibold tracking-tight">
+              Selected projects
+            </h2>
+            <a
+              href="/projects"
+              class="text-sm text-accent-600 hover:underline dark:text-accent-400"
+            >
+              All projects →
+            </a>
+          </div>
+          <div class="grid gap-4">
+            {featured.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="space-y-5">
+      <h2 class="text-xl font-semibold tracking-tight">Work</h2>
+      <WorkHistory />
+    </section>
+  </div>
+</BaseLayout>
