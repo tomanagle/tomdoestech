@@ -11,7 +11,7 @@ const published = await getCollection("projects", ({ data }) =>
 );
 const featured = published
   .filter((p) => p.data.featured)
-  .sort((a, b) => a.data.order - b.data.order)
+  .toSorted((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
 ---
 

@@ -1,0 +1,24 @@
+# Git hooks managed by lefthook (https://lefthook.dev).
+# The hook is installed by `lefthook install`, which runs automatically on
+# `bun install` via the package.json "prepare" script.
+#
+# Note: oxfmt/oxlint do not yet support `.astro` files, so those are not
+# formatted/linted here — only JS/TS/JSX/TSX/CSS/JSON/MD(X)/YAML.
+
+pre-commit:
+  parallel: false
+  commands:
+    format:
+      priority: 1
+      # oxfmt 0.55 mangles JSX comments in .mdx, so writeups are not formatted.
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,jsonc,css,md,yaml,yml,html}"
+      exclude:
+        - "worker-configuration.d.ts"
+      run: bunx oxfmt {staged_files}
+      stage_fixed: true
+    lint:
+      priority: 2
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs,astro}"
+      exclude:
+        - "worker-configuration.d.ts"
+      run: bunx oxlint {staged_files}
