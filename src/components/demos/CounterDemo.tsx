@@ -8,11 +8,11 @@ export default function CounterDemo() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="not-prose my-6 flex items-center gap-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="not-prose my-6 flex items-center gap-4 rounded-lg border border-border bg-surface-2 p-4">
       <button
         type="button"
         onClick={() => setCount((c) => c - 1)}
-        className="h-9 w-9 rounded-md border border-zinc-300 text-lg leading-none transition-colors hover:bg-zinc-200 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        className="h-9 w-9 rounded-md border border-border text-lg leading-none transition-colors hover:bg-surface"
         aria-label="Decrement"
       >
         −
@@ -23,12 +23,12 @@ export default function CounterDemo() {
       <button
         type="button"
         onClick={() => setCount((c) => c + 1)}
-        className="h-9 w-9 rounded-md border border-zinc-300 text-lg leading-none transition-colors hover:bg-zinc-200 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        className="h-9 w-9 rounded-md border border-border text-lg leading-none transition-colors hover:bg-surface"
         aria-label="Increment"
       >
         +
       </button>
-      <span className="text-sm text-zinc-500 dark:text-zinc-400">
+      <span className="text-sm text-fg">
         Interactive island — hydrated with <code>client:visible</code>
       </span>
     </div>

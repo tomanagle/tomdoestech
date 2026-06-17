@@ -102,7 +102,7 @@ export default function ProjectsExplorer({ projects }: Props) {
           />
         )}
 
-        <p className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="flex items-center gap-3 text-sm text-fg">
           <span>
             {filtered.length} project{filtered.length === 1 ? "" : "s"}
           </span>
@@ -110,7 +110,7 @@ export default function ProjectsExplorer({ projects }: Props) {
             <button
               type="button"
               onClick={() => update(EMPTY)}
-              className="text-accent-600 hover:underline dark:text-accent-400"
+              className="text-accent hover:underline"
             >
               Clear filters
             </button>
@@ -119,9 +119,7 @@ export default function ProjectsExplorer({ projects }: Props) {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">
-          No projects match these filters.
-        </p>
+        <p className="text-fg">No projects match these filters.</p>
       ) : (
         <div className="grid gap-4">
           {filtered.map((project) => (
@@ -143,9 +141,7 @@ interface FilterGroupProps {
 function FilterGroup({ label, options, selected, onToggle }: FilterGroupProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="mr-1 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-        {label}
-      </span>
+      <span className="mr-1 text-sm font-medium text-fg">{label}</span>
       {options.map((option) => {
         const active = selected.includes(option);
         return (
@@ -156,8 +152,8 @@ function FilterGroup({ label, options, selected, onToggle }: FilterGroupProps) {
             onClick={() => onToggle(option)}
             className={
               active
-                ? "rounded-full border border-accent-500 bg-accent-500 px-3 py-1 text-sm text-white transition-colors"
-                : "rounded-full border border-zinc-200 px-3 py-1 text-sm text-zinc-600 transition-colors hover:border-accent-500 hover:text-accent-600 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-accent-400 dark:hover:text-accent-400"
+                ? "rounded-full border border-accent bg-accent px-3 py-1 text-sm text-accent-contrast transition-colors"
+                : "rounded-full border border-border px-3 py-1 text-sm text-fg transition-colors hover:border-accent hover:text-accent-strong"
             }
           >
             {option}
@@ -170,33 +166,38 @@ function FilterGroup({ label, options, selected, onToggle }: FilterGroupProps) {
 
 function ProjectCard({ project }: { project: ProjectSummary }) {
   return (
-    <article className="group relative rounded-xl border border-zinc-200 p-5 transition-colors hover:border-accent-500 dark:border-zinc-800 dark:hover:border-accent-400">
+    <article className="group relative rounded-xl border border-border bg-surface p-5 transition duration-200 hover:-translate-y-0.5 hover:border-accent">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-lg font-semibold tracking-tight">
-          <a
-            href={`/projects/${project.id}`}
-            className="after:absolute after:inset-0"
-          >
-            {project.title}
-          </a>
-        </h2>
+        <div>
+          <h2 className="text-lg font-semibold tracking-tight">
+            <a
+              href={`/projects/${project.id}`}
+              className="after:absolute after:inset-0"
+            >
+              {project.title}
+            </a>
+          </h2>
+          {project.company && (
+            <div className="mt-0.5 text-sm text-accent-strong">
+              {project.company}
+            </div>
+          )}
+        </div>
         {project.period && (
-          <span className="shrink-0 font-mono text-xs text-zinc-500 dark:text-zinc-400">
+          <span className="shrink-0 font-mono text-sm text-faint">
             {project.period}
           </span>
         )}
       </div>
 
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        {project.description}
-      </p>
+      <p className="mt-2 text-sm text-fg">{project.description}</p>
 
       {project.tech.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-2">
           {project.tech.map((t) => (
             <li
               key={t}
-              className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+              className="rounded-full bg-surface-2 px-2.5 py-0.5 text-sm text-fg"
             >
               {t}
             </li>

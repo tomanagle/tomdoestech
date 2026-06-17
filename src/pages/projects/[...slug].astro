@@ -24,24 +24,25 @@ const { Content } = await render(entry);
 ---
 
 <BaseLayout title={data.title} description={data.description}>
-  <article>
+  <article class="py-10">
     <a
       href="/projects"
-      class="text-sm text-zinc-500 transition-colors hover:text-accent-600 dark:text-zinc-400 dark:hover:text-accent-400"
+      class="text-sm text-fg transition-colors hover:text-accent-strong"
     >
       ← All projects
     </a>
 
-    <header class="mt-4 space-y-3 border-b border-zinc-200 pb-6 dark:border-zinc-800">
+    <header class="mt-4 space-y-3 border-b border-border pb-6">
       <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
         {data.title}
       </h1>
-      <p class="text-lg text-zinc-600 dark:text-zinc-400">
+      <p class="text-lg text-fg">
         {data.description}
       </p>
 
-      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400">
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-fg">
         {data.role && <span>{data.role}</span>}
+        {data.company && <span class="text-accent-strong">{data.company}</span>}
         {data.period && <span class="font-mono">{data.period}</span>}
       </div>
 
@@ -49,7 +50,7 @@ const { Content } = await render(entry);
         data.tech.length > 0 && (
           <ul class="flex flex-wrap gap-2">
             {data.tech.map((t) => (
-              <li class="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+              <li class="rounded-full bg-surface-2 px-2.5 py-0.5 text-sm text-fg">
                 {t}
               </li>
             ))}
