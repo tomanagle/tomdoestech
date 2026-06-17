@@ -12,18 +12,51 @@ const featured = published
   .filter((p) => p.data.featured)
   .toSorted((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
+
+// Person structured data - helps search engines connect the profile + socials.
+const personLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  jobTitle: "Senior Software Engineer",
+  email: `mailto:${profile.email}`,
+  url: (Astro.site ?? Astro.url).toString(),
+  sameAs: profile.socials.map((s) => s.url),
+};
 ---
 
 <BaseLayout>
+  <script
+    type="application/ld+json"
+    slot="head"
+    is:inline
+    set:html={JSON.stringify(personLd)}
+  />
+
   <!-- Hero -->
   <section class="hero relative isolate pt-10 pb-14">
-    <p class="font-mono text-sm tracking-[0.14em] text-accent-strong uppercase">
-      Senior Software Engineer · Sunshine Coast, QLD
-    </p>
-    <h1 class="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
-      {profile.name}
-    </h1>
-    <p class="mt-5 max-w-2xl text-lg text-fg">{profile.bio.intro}</p>
+    <div class="terminal">
+      <div class="terminal__bar" aria-hidden="true">
+        <span class="dot dot--r"></span>
+        <span class="dot dot--y"></span>
+        <span class="dot dot--g"></span>
+        <span class="terminal__title">tom@tomdoes.tech ~</span>
+      </div>
+      <div class="terminal__body">
+        <h1
+          class="hero-name text-3xl font-bold tracking-tight sm:text-4xl"
+          aria-label={profile.name}
+        >
+          <span class="prompt" aria-hidden="true">&gt;</span><span
+            class="typed">{profile.name}</span
+          ><span class="caret" aria-hidden="true"></span>
+        </h1>
+        <p class="term-line term-role">
+          Senior Software Engineer · Sunshine Coast, QLD
+        </p>
+        <p class="term-line term-bio">{profile.bio.intro}</p>
+      </div>
+    </div>
 
     <div class="mt-7"><SocialLinks /></div>
 
@@ -52,9 +85,9 @@ const featured = published
 
   <!-- Experience -->
   <section id="work" class="border-t border-border py-16">
-    <p class="mb-7 font-mono text-sm tracking-[0.14em] text-faint uppercase">
+    <h2 class="mb-7 font-mono text-sm tracking-[0.14em] text-faint uppercase">
       Experience
-    </p>
+    </h2>
     <WorkHistory />
   </section>
 
@@ -63,9 +96,9 @@ const featured = published
     featured.length > 0 && (
       <section class="border-t border-border py-16">
         <div class="mb-7 flex items-baseline justify-between gap-4">
-          <p class="font-mono text-sm tracking-[0.14em] text-faint uppercase">
+          <h2 class="font-mono text-sm tracking-[0.14em] text-faint uppercase">
             Selected projects
-          </p>
+          </h2>
           <a href="/projects" class="text-sm text-accent hover:underline">
             All projects →
           </a>
@@ -122,4 +155,117 @@ const featured = published
       transform: none;
     }
   }
+
+  /* Terminal window around the hero intro. */
+  .terminal {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    overflow: hidden;
+    box-shadow: 0 16px 40px -28px rgba(0, 0, 0, 0.5);
+    font-family: var(--font-mono);
+  }
+  .terminal__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 0.85rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .terminal__bar .dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 999px;
+  }
+  .dot--r {
+    background: #ff5f57;
+  }
+  .dot--y {
+    background: #febc2e;
+  }
+  .dot--g {
+    background: #28c840;
+  }
+  .terminal__title {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--faint);
+  }
+  .terminal__body {
+    padding: 1.15rem 1.3rem 1.4rem;
+  }
+  .term-line {
+    font-family: var(--font-mono);
+    line-height: 1.65;
+    margin-top: 0.55rem;
+  }
+  .term-role {
+    color: var(--faint);
+    font-size: 0.95rem;
+  }
+  .term-bio {
+    color: var(--fg);
+    font-size: 0.95rem;
+    max-width: 36rem;
+  }
+
+  /* Typewriter caret for the hero name. */
+  .hero-name {
+    font-family: var(--font-mono);
+    /* keep the line height stable while the name types in */
+    min-height: 1.1em;
+  }
+  .hero-name .prompt {
+    color: var(--accent);
+    margin-right: 0.45rem;
+  }
+  .hero-name .caret {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.9em;
+    margin-left: 0.08em;
+    vertical-align: -0.08em;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-name .caret {
+      animation: caret-blink 1.05s steps(1) infinite;
+    }
+  }
+  @keyframes caret-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  /* No caret when motion is reduced or the user paused animations. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-name .caret {
+      display: none;
+    }
+  }
+  :global(html[data-motion="off"]) .hero-name .caret {
+    display: none;
+  }
 </style>
+
+<script>
+  const typed = document.querySelector<HTMLElement>(".hero-name .typed");
+  if (typed) {
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const paused = document.documentElement.dataset.motion === "off";
+    const full = typed.textContent ?? "";
+    if (full && !reduced && !paused) {
+      typed.textContent = "";
+      let i = 0;
+      const step = () => {
+        typed.textContent = full.slice(0, ++i);
+        if (i < full.length) window.setTimeout(step, 85);
+      };
+      window.setTimeout(step, 280);
+    }
+  }
+</script>

@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 /* ============================================================
-   Design tokens — "Teal" direction.
+   Design tokens - "Teal" direction.
    Colors are referenced inline so utilities (bg-bg, text-fg, …) resolve to
    the runtime vars below, which flip with the OS theme. No `dark:` needed.
    ============================================================ */
@@ -93,4 +93,23 @@ h4 {
   html {
     scroll-behavior: auto;
   }
+}
+
+/* Manual "pause animations" toggle (header). Stops looping animations for
+   anyone who finds them distracting while reading. */
+html[data-motion="off"] *,
+html[data-motion="off"] *::before,
+html[data-motion="off"] *::after {
+  animation: none !important;
+}
+
+/* Play/pause icon swap, driven by the same state. */
+.motion-play {
+  display: none;
+}
+html[data-motion="off"] .motion-pause {
+  display: none;
+}
+html[data-motion="off"] .motion-play {
+  display: block;
 }

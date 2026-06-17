@@ -9,9 +9,12 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  // TODO: set this to your real production domain — it's used for canonical
-  // URLs, Open Graph image URLs, and the generated sitemap.
-  site: "https://tomdoestech.com",
+  // Used for canonical URLs, Open Graph image URLs, robots.txt, and the sitemap.
+  site: "https://tomdoes.tech",
+  // @astrojs/sitemap emits sitemap-index.xml; expose it at the conventional URL.
+  redirects: {
+    "/sitemap.xml": "/sitemap-index.xml",
+  },
   adapter: cloudflare(),
   integrations: [react(), mdx(), sitemap()],
   vite: {

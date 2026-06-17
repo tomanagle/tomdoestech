@@ -29,7 +29,7 @@ export default function CounterDemo() {
         +
       </button>
       <span className="text-sm text-fg">
-        Interactive island — hydrated with <code>client:visible</code>
+        Interactive island - hydrated with <code>client:visible</code>
       </span>
     </div>
   );

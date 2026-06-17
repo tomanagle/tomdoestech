@@ -11,15 +11,13 @@ interface Props {
   ogImage?: string;
 }
 
-const {
-  title,
-  description = profile.bio.tagline,
-  ogImage = "/og-default.png",
-} = Astro.props;
+const { title, description = profile.bio.tagline, ogImage } = Astro.props;
 
-const pageTitle = title ? `${title} — ${profile.name}` : profile.name;
+const pageTitle = title ? `${title} - ${profile.name}` : profile.name;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
-const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url);
+const ogImageUrl = ogImage
+  ? new URL(ogImage, Astro.site ?? Astro.url)
+  : undefined;
 ---
 
 <!doctype html>
@@ -30,6 +28,14 @@ const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
+
+    {/* Apply the saved "pause animations" preference before first paint. */}
+    <script is:inline>
+      try {
+        if (localStorage.getItem("motion") === "off")
+          document.documentElement.dataset.motion = "off";
+      } catch (e) {}
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -47,17 +53,28 @@ const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url);
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImageUrl} />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
 
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:card"
+      content={ogImageUrl ? "summary_large_image" : "summary"}
+    />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImageUrl} />
+    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+
+    <slot name="head" />
   </head>
   <body class="flex min-h-screen flex-col">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:border focus:border-border focus:bg-surface focus:px-4 focus:py-2 focus:text-fg"
+    >
+      Skip to content
+    </a>
     <Header />
-    <main class="mx-auto w-full max-w-[60rem] flex-1 px-6">
+    <main id="main" class="mx-auto w-full max-w-[60rem] flex-1 px-6">
       <slot />
     </main>
     <Footer />

@@ -1,6 +1,6 @@
 // Single source of truth for the technologies a project can be tagged with.
 // Used by the projects content schema (`tech` enum) and the projects-page
-// filters. Add new entries here before tagging a project with them — the
+// filters. Add new entries here before tagging a project with them - the
 // content build will fail on any value not in this list.
 export const TECHNOLOGIES = [
   "TypeScript",

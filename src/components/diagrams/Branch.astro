@@ -1,0 +1,64 @@
+---
+// A source node fanning out to labelled branches. Dependency-free and themed.
+interface BranchItem {
+  /** Short label for the branch condition (rendered as a chip). */
+  label?: string;
+  title: string;
+  body?: string;
+}
+interface Props {
+  from: string;
+  fromBody?: string;
+  branches: BranchItem[];
+  caption?: string;
+}
+const { from, fromBody, branches, caption } = Astro.props;
+---
+
+<figure class="not-prose my-7">
+  <div class="rounded-xl border border-border bg-surface px-4 py-3 text-center">
+    <p class="font-medium text-fg">{from}</p>
+    {fromBody && <p class="mt-1 text-sm text-faint">{fromBody}</p>}
+  </div>
+
+  <div
+    aria-hidden="true"
+    class="flex h-7 items-center justify-center text-faint"
+  >
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="h-4 w-4"
+    >
+      <path d="M12 5v14M19 12l-7 7-7-7"></path>
+    </svg>
+  </div>
+
+  <div class="grid gap-3 sm:grid-cols-2">
+    {
+      branches.map((b) => (
+        <div class="rounded-xl border border-border bg-surface px-4 py-3">
+          {b.label && (
+            <span class="mb-1.5 inline-block rounded-full bg-accent-soft px-2 py-0.5 font-mono text-sm text-accent-strong">
+              {b.label}
+            </span>
+          )}
+          <p class="font-medium text-fg">{b.title}</p>
+          {b.body && <p class="mt-1 text-sm text-faint">{b.body}</p>}
+        </div>
+      ))
+    }
+  </div>
+
+  {
+    caption && (
+      <figcaption class="mt-3 text-center text-sm text-faint">
+        {caption}
+      </figcaption>
+    )
+  }
+</figure>

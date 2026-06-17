@@ -31,14 +31,14 @@ const summaries: ProjectSummary[] = sorted.map((project) => ({
     <header class="space-y-2">
       <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Projects</h1>
       <p class="text-fg">
-        Writeups of things I've built — the context, how I implemented them, and
+        Writeups of things I've built: the context, how I implemented them, and
         what I learned. Filter by company or technology.
       </p>
     </header>
 
     {
       summaries.length === 0 ? (
-        <p class="text-fg">No projects published yet — check back soon.</p>
+        <p class="text-fg">No projects published yet. Check back soon.</p>
       ) : (
         <ProjectsExplorer client:load projects={summaries} />
       )

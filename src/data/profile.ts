@@ -1,5 +1,5 @@
 // Single source of truth for personal/profile data shown across the site.
-// Edit the values below — the components and layout read straight from here.
+// Edit the values below - the components and layout read straight from here.
 
 import type { Company } from "./companies";
 import type { Technology } from "./technologies";
@@ -14,7 +14,7 @@ export interface SocialLink {
 
 export interface Role {
   title: string;
-  /** Free-form date range, e.g. "Jan 2019 — Jun 2019". */
+  /** Free-form date range, e.g. "Jan 2019 - Jun 2019". */
   period: string;
   /** Bullet-point accomplishments shown under the role. */
   highlights?: string[];
@@ -53,11 +53,11 @@ export const profile: Profile = {
   name: "Tom Nagle",
   email: "tomanagle@gmail.com",
   bio: {
-    tagline: "Senior software engineer.",
+    tagline:
+      "Tom Nagle is a senior software engineer building backends, data " +
+      "pipelines, and products, based on the Sunshine Coast, QLD.",
     intro:
-      "I'm a senior software engineer who enjoys building pragmatic, " +
-      "well-crafted software. Below are a few places you can find me, and " +
-      "some writeups of projects I've worked on.",
+      "Senior software engineer that loves building products that users love. I enjoy getting down into the technical details and working with product teams to solve real customer problems.",
   },
   socials: [
     {
@@ -96,7 +96,7 @@ export const profile: Profile = {
       roles: [
         {
           title: "Senior Software Engineer",
-          period: "Feb 2024 — Present",
+          period: "Feb 2024 - Present",
           highlights: [
             "Lead the technical design and development of major features across the Node.js/TypeScript backend, Go services, and Flutter app.",
             "Lead architecture and technical design discussions.",
@@ -112,7 +112,7 @@ export const profile: Profile = {
       roles: [
         {
           title: "Senior Software Engineer",
-          period: "Sep 2019 — Feb 2024",
+          period: "Sep 2019 - Feb 2024",
           highlights: [
             "Led a large project using Next.js, GraphQL, and TypeScript.",
             "Led the development of and contributed to several Go applications.",
@@ -132,7 +132,7 @@ export const profile: Profile = {
       roles: [
         {
           title: "Development Lead",
-          period: "Jan 2019 — Jun 2019",
+          period: "Jan 2019 - Jun 2019",
           highlights: [
             "Led and coached developers, owning technical solution design and code reviews.",
             "Developed GraphQL and REST APIs with Node.js, TypeScript, Apollo, Express, and MongoDB.",
@@ -142,15 +142,15 @@ export const profile: Profile = {
         },
         {
           title: "Senior Full Stack Developer",
-          period: "Jan 2018 — Jan 2019",
+          period: "Jan 2018 - Jan 2019",
         },
         {
           title: "Full Stack Developer",
-          period: "Jan 2017 — Jan 2018",
+          period: "Jan 2017 - Jan 2018",
         },
         {
           title: "Web Developer",
-          period: "Feb 2016 — Jan 2017",
+          period: "Feb 2016 - Jan 2017",
         },
       ],
     },
@@ -160,7 +160,7 @@ export const profile: Profile = {
       roles: [
         {
           title: "Ecommerce Manager",
-          period: "May 2015 — Nov 2015",
+          period: "May 2015 - Nov 2015",
           highlights: [
             "Designed, developed, and deployed e-commerce websites selling premium pet products worldwide.",
             "Configured LAMP-stack servers, significantly reducing hosting costs while improving site performance.",
@@ -174,7 +174,7 @@ export const profile: Profile = {
       roles: [
         {
           title: "Web Developer",
-          period: "Apr 2015 — Nov 2015",
+          period: "Apr 2015 - Nov 2015",
           highlights: [
             "Worked in a team of marketers and developers building websites and online marketing strategies for clients.",
           ],
@@ -187,7 +187,7 @@ export const profile: Profile = {
       roles: [
         {
           title: "Web Developer & SEO",
-          period: "Jun 2013 — Nov 2015",
+          period: "Jun 2013 - Nov 2015",
           highlights: [
             "Designed and developed e-commerce websites with Drupal Commerce and WooCommerce in a small team.",
             "Configured AWS instances and deployed sites on LAMP-stack servers.",

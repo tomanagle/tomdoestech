@@ -1,28 +1,105 @@
 ---
 title: Bill of Materials Automator
-description: Automate the generation of bill of materials for solar system designs
+description: A rules engine that lets non-developers automate the bill of materials for solar system designs.
 role: Lead engineer
 company: UPowr
 tech:
   - TypeScript
-  - GitHub Actions
+  - Node.js
   - PostgreSQL
 period: "2024"
 featured: true
 order: 1
-draft: false
+draft: true
 ---
 
-import Callout from "../../components/mdx/Callout.astro";
-import CounterDemo from "../../components/demos/CounterDemo.tsx";
+import Flow from "../../components/diagrams/Flow.astro";
+import Branch from "../../components/diagrams/Branch.astro";
 
 ## Context & Background
 
+Solar designs are built from a finite set of hardware: panels, batteries, inverters, EV chargers. But the bill of materials (BOM) also needs a long tail of extra hardware and service items that depend on the site (roof type, slope, travel distance) and the design itself (number of panels, inverter type, and so on).
+
+Encoding all of that in application code would have meant a constant maintenance burden for engineers and very little flexibility for the people who actually own the pricing and BOM logic. The Bill of Materials Automator is a rules engine that lets those users define rules which automatically add the right items to a BOM based on the design and site.
+
 ## Implementation
+
+I led the work to grow this from a single rule type into a small rules engine that non-developers could safely author against. When I joined, it could already add components based on the presence of other components, modelled as a directed acyclic graph. I designed and delivered three further rule types (conditional, fixed, and bundle rules), along with the guardrails that make operator-authored rules safe to run.
+
+At a high level, the engine loads the active rules for a project, groups them by type, and runs them in a defined order. Each type decides *what* gets added and *when*.
+
+<Branch
+  from="BOM rule"
+  fromBody="Active rules are grouped by type before the BOM is built."
+  branches={[
+    {
+      label: "SKU-based",
+      title: "Component-driven",
+      body: "Adds components when other components are present, modelled as a directed acyclic graph.",
+    },
+    {
+      label: "Conditional",
+      title: "Condition-driven",
+      body: "Adds components when an expression over the design and site evaluates true.",
+    },
+    {
+      label: "Fixed",
+      title: "Always-on",
+      body: "Adds hardware or fees every time; quantities can be dynamic formulas.",
+    },
+    {
+      label: "Bundle",
+      title: "Grouped",
+      body: "Represents components that are sold and priced together as a single parent item.",
+    },
+  ]}
+  caption="The rule types the engine runs."
+/>
+
+**Conditional rules** are powered by a small, dependency-free expression language. Operators can express conditions and quantities as formulas (mapping over the rows of a design, rounding up to whole units, and so on) rather than waiting on an engineer to ship a change.
+
+**Fixed rules** add hardware and fees, and they surfaced a subtle ordering problem. Rules that add hardware need to run early, so later rules can build on what they add. But some rules calculate their quantities from running totals (like total hardware or installation cost) that only exist once most of the BOM has been built. I split fixed rules into two passes based on whether a rule depends on those totals, so each rule runs at the only point where its inputs are actually available.
+
+<Branch
+  from="Fixed rule"
+  fromBody="Split by whether the rule depends on running totals."
+  branches={[
+    {
+      label: "adds hardware",
+      title: "Early pass",
+      body: "Runs up front so component- and condition-driven rules can build on what it adds.",
+    },
+    {
+      label: "depends on totals",
+      title: "Final pass",
+      body: "Quantities depend on running totals that only exist once the rest of the BOM has run.",
+    },
+  ]}
+  caption="Fixed rules run in whichever pass makes their inputs available."
+/>
+
+### Bundles
+
+Bundles represent a set of components that are sold and priced together (a kit that is really a dozen smaller parts) under a single parent item. The interesting part is that bundle handling runs *in reverse*: instead of adding items to a design, it recognises when a finished design already contains the components that make up a known bundle and collapses them into a single priced line.
+
+<Flow
+  steps={[
+    {
+      title: "Finished design",
+      body: "Start from the components already on a completed design.",
+    },
+    {
+      title: "Recognise a known bundle",
+      body: "Detect when the design contains the components that make up a defined bundle.",
+    },
+    {
+      title: "Collapse into one priced item",
+      body: "Represent those components as a single parent item, ready to price.",
+    },
+  ]}
+  caption="Bundle handling runs in reverse: it recognises bundles within a design rather than building them up."
+/>
 
 ## What Went Well
 
-
 ## What I'd Do Differently
-
-

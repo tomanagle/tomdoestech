@@ -1,6 +1,6 @@
 ---
 title: Event Analytics Pipeline
-description: A pipeline that lands Kafka events in S3, transforms them, and serves them for analytics — later re-platformed onto dbt and Snowflake.
+description: A pipeline that lands Kafka events in S3, transforms them, and serves them for analytics, later re-platformed onto dbt and Snowflake.
 role: Software developer
 company: Localz (Descartes)
 tech:
@@ -11,55 +11,72 @@ tech:
   - Athena
   - dbt
   - Snowflake
-period: "2020 — 2022"
+period: "2020 - 2022"
 featured: true
 order: 1
 draft: false
 ---
 
-import Callout from "../../components/mdx/Callout.astro";
+import PipelineFlow from "../../components/diagrams/PipelineFlow.astro";
 
 ## Context & Background
 
-The platform emitted a high volume of domain events onto Kafka, but there was
-no good way to analyse them. Product and business teams needed to query that
-activity historically, and we needed somewhere to land it that wouldn't put
-analytical load on the operational systems producing the events.
+Localz had a microservices architecture where each service would emit it's own set of events to Kafka. There was a service that subscribed to all messages and piped them in to S3 with Kinesis Firehose, we called this the "dirty". The original design used AWS Glue to transform the data into a "clean" bucket that was queries with Athena. The issue was that the data was being displayed on a customer-facing dashboard and the queries would take 60-120 seconds to execute.
+
+<PipelineFlow
+  sources={["Accounts API", "Feedback API", "Orders API"]}
+  wrapAfter={3}
+  stages={[
+    { title: "Kafka", icon: "stream" },
+    { title: "Kinesis Firehose", icon: "flame", flow: "document" },
+    { title: "S3 (dirty)", icon: "database", note: "Parquet", flow: "document" },
+    { title: "AWS Glue", icon: "sparkles", flow: "data" },
+    { title: "Athena", icon: "database", flow: "data" },
+    {
+      title: "Dashboard",
+      icon: "laptop",
+      laptop: true,
+      badge: "60-120s / query",
+      flow: "data",
+    },
+  ]}
+  caption="The original pipeline. Athena queries took 60 to 120 seconds, too slow for a customer-facing dashboard."
+/>
 
 ## Implementation
 
-The first version was built entirely on AWS-native, mostly-serverless
-components:
+The Firehose to the dirty bucket infrastructure was solid, so we kept it. The only change that we made to that flow was to add a PII redactor so no PII made it into the lake.
 
-- **Kinesis Firehose** consumed the Kafka events and buffered them into
-  batched objects in **S3**, which acted as the raw landing zone / data lake.
-- **AWS Glue** ran the ETL — cataloguing the raw data and transforming it into
-  a cleaned, structured form.
-- The curated data was then queryable with **Athena**, giving analysts SQL over
-  the data in S3 without standing up a warehouse.
+After reviewing different vendors we landed on Snowflake as the warehouse provider and dbt as the transformation layer. We built a new pipeline that extracted the data from the dirty bucket, transformed it with dbt and loaded it into Snowflake.
 
-<Callout type="info">
-  The whole v1 pipeline was serverless and AWS-managed: Firehose for ingestion,
-  S3 as the lake, Glue for ETL, Athena for query. Decoupling ingestion from
-  processing meant the operational Kafka consumers were never on the critical
-  path for analytics.
-</Callout>
+<PipelineFlow
+  sources={["Accounts API", "Feedback API", "Orders API"]}
+  wrapAfter={3}
+  stages={[
+    { title: "Kafka", icon: "stream" },
+    {
+      title: "Kinesis Firehose",
+      icon: "flame",
+      badge: "PII redactor",
+      flow: "document",
+    },
+    { title: "S3 (dirty)", icon: "database", note: "Parquet", flow: "document" },
+    { title: "dbt", icon: "sparkles", flow: "data" },
+    { title: "Snowflake", icon: "snowflake", flow: "data" },
+    {
+      title: "Dashboard",
+      icon: "laptop",
+      laptop: true,
+      badge: "seconds / query",
+      flow: "data",
+    },
+  ]}
+  caption="The new pipeline. Snowflake answered the same queries in seconds."
+/>
 
-Later we re-platformed the transformation layer onto **dbt**, modelling the
-data as version-controlled SQL, and loaded the transformed output into
-**Snowflake** as the warehouse. dbt replaced the Glue ETL jobs and gave the
-team a faster, more testable, and more maintainable transformation workflow.
 
 ## What Went Well
-
-- Firehose → S3 cleanly decoupled ingestion from processing, so analytics work
-  never affected the systems producing the events.
-- Leaning on managed, serverless pieces (Firehose, Athena) kept the operational
-  overhead low while we were proving the pipeline out.
+Snowflake was a great choice, the large, complex queries executed in seconds rather than minutes. We could then use the data to surface more complicated insights, such as full customer journeys where the data came from several different services.
 
 ## What I'd Do Differently
-
-- The Glue-based ETL became hard to evolve and reason about as the
-  transformations grew — which is ultimately why we moved to dbt and Snowflake.
-  Knowing that, I'd reach for dbt + a warehouse earlier rather than hand-rolling
-  ETL jobs in Glue.
+Glue turned out to be extremely expensive and slow for what we needed. If I was to implement this flow again I would look for tools outside the AWS ecosystem before just settling in familiar territory. 

@@ -1,0 +1,119 @@
+---
+// Pause / play on-page animations. The effect is global (sets a flag on
+// <html>) and persisted in localStorage, so the choice applies across every
+// article and is restored before first paint (see BaseLayout).
+---
+
+<span class="wrap">
+  <button
+    type="button"
+    class="motion-toggle"
+    aria-pressed="false"
+    aria-label="Pause animations"
+  >
+    <svg
+      class="motion-pause"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <rect x="7" y="5" width="3.5" height="14" rx="1"></rect>
+      <rect x="13.5" y="5" width="3.5" height="14" rx="1"></rect>
+    </svg>
+    <svg
+      class="motion-play"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M8 5v14l11-7z"></path>
+    </svg>
+  </button>
+  <span class="tip" aria-hidden="true">Pause animations</span>
+</span>
+
+<style>
+  .wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .motion-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--faint);
+    cursor: pointer;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .motion-toggle:hover {
+    color: var(--fg);
+    border-color: var(--accent);
+  }
+  .motion-toggle :global(svg) {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+  .tip {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+    background: var(--fg);
+    color: var(--bg);
+    font-size: 0.78rem;
+    white-space: nowrap;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.15s,
+      transform 0.15s;
+    z-index: 20;
+  }
+  .wrap:hover .tip,
+  .wrap:focus-within .tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+
+<script>
+  const html = document.documentElement;
+  const toggles =
+    document.querySelectorAll<HTMLButtonElement>(".motion-toggle");
+
+  function sync() {
+    const paused = html.dataset.motion === "off";
+    const label = paused ? "Play animations" : "Pause animations";
+    toggles.forEach((btn) => {
+      btn.setAttribute("aria-pressed", String(paused));
+      btn.setAttribute("aria-label", label);
+      const tip = btn.parentElement?.querySelector(".tip");
+      if (tip) tip.textContent = label;
+    });
+  }
+
+  sync();
+
+  toggles.forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const paused = html.dataset.motion === "off";
+      if (paused) delete html.dataset.motion;
+      else html.dataset.motion = "off";
+      try {
+        localStorage.setItem("motion", paused ? "on" : "off");
+      } catch (e) {
+        /* localStorage unavailable */
+      }
+      sync();
+    }),
+  );
+</script>

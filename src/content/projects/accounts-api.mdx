@@ -1,6 +1,6 @@
 ---
 title: Accounts API
-description: Aggregate products from multiple sources into a single, unified catalog for solar system designs
+description: A multi-tenant accounts and authentication service for the platform, with OAuth through Descartes as the identity provider.
 role: Lead engineer
 company: Localz (Descartes)
 tech:
@@ -14,13 +14,20 @@ order: 1
 draft: false
 ---
 
-import Callout from "../../components/mdx/Callout.astro";
-import CounterDemo from "../../components/demos/CounterDemo.tsx";
-
 ## Context & Background
+Localz had a legacy microservice that handled both some configuration and authentication for the platform. The configuration side had mostly been moved out into its own microservice already, so to completely decommission the legacy service we needed to move authentication into a new service too. Around the same time Localz had been acquired by Descartes, so we also needed to implement OAuth with Descartes as the identity provider.
 
 ## Implementation
+I built the service in Go, with MongoDB for storage and events logged to Kafka. It's multi-tenant, with the project as the tenant identifier, and users can have different roles on different projects.
+
+The roles and permissions from the legacy service didn't map cleanly onto how they were actually being used, so I remapped them.
+
+I implemented email and password first, then added OAuth with Descartes as the identity provider and merged the accounts.
+
+The platform is multi-regional with data sovereignty requirements, so users need a separate account in each region. Sessions use access and refresh tokens.
 
 ## What Went Well
+The service was deployed and integrated into the main configuration platform quickly. The OAuth flow gave the wider Descartes user base seamless access. The access and refresh tokens let users have long-lived sessions without compromising security.
 
 ## What I'd Do Differently
+I'd store password hashes in DynamoDB instead of MongoDB, so a user would have a single password across all regions rather than one per region. I'd also store the project and role relationships in PostgreSQL instead of MongoDB, because the data was highly relational and needed complex queries to work out access levels.
