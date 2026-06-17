@@ -1,0 +1,65 @@
+---
+title: Event Analytics Pipeline
+description: A pipeline that lands Kafka events in S3, transforms them, and serves them for analytics — later re-platformed onto dbt and Snowflake.
+role: Software developer
+company: Localz (Descartes)
+tech:
+  - Kafka
+  - Kinesis Firehose
+  - S3
+  - AWS Glue
+  - Athena
+  - dbt
+  - Snowflake
+period: "2020 — 2022"
+featured: true
+order: 1
+draft: false
+---
+
+import Callout from "../../components/mdx/Callout.astro";
+
+## Context & Background
+
+The platform emitted a high volume of domain events onto Kafka, but there was
+no good way to analyse them. Product and business teams needed to query that
+activity historically, and we needed somewhere to land it that wouldn't put
+analytical load on the operational systems producing the events.
+
+## Implementation
+
+The first version was built entirely on AWS-native, mostly-serverless
+components:
+
+- **Kinesis Firehose** consumed the Kafka events and buffered them into
+  batched objects in **S3**, which acted as the raw landing zone / data lake.
+- **AWS Glue** ran the ETL — cataloguing the raw data and transforming it into
+  a cleaned, structured form.
+- The curated data was then queryable with **Athena**, giving analysts SQL over
+  the data in S3 without standing up a warehouse.
+
+<Callout type="info">
+  The whole v1 pipeline was serverless and AWS-managed: Firehose for ingestion,
+  S3 as the lake, Glue for ETL, Athena for query. Decoupling ingestion from
+  processing meant the operational Kafka consumers were never on the critical
+  path for analytics.
+</Callout>
+
+Later we re-platformed the transformation layer onto **dbt**, modelling the
+data as version-controlled SQL, and loaded the transformed output into
+**Snowflake** as the warehouse. dbt replaced the Glue ETL jobs and gave the
+team a faster, more testable, and more maintainable transformation workflow.
+
+## What Went Well
+
+- Firehose → S3 cleanly decoupled ingestion from processing, so analytics work
+  never affected the systems producing the events.
+- Leaning on managed, serverless pieces (Firehose, Athena) kept the operational
+  overhead low while we were proving the pipeline out.
+
+## What I'd Do Differently
+
+- The Glue-based ETL became hard to evolve and reason about as the
+  transformations grew — which is ultimately why we moved to dbt and Snowflake.
+  Knowing that, I'd reach for dbt + a warehouse earlier rather than hand-rolling
+  ETL jobs in Glue.

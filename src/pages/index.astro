@@ -6,9 +6,8 @@ import WorkHistory from "../components/WorkHistory.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { profile } from "../data/profile";
 
-const published = await getCollection("projects", ({ data }) =>
-  import.meta.env.PROD ? !data.draft : true,
-);
+// Never include drafts (set `draft: false` to publish a writeup).
+const published = await getCollection("projects", ({ data }) => !data.draft);
 const featured = published
   .filter((p) => p.data.featured)
   .toSorted((a, b) => a.data.order - b.data.order)

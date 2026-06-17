@@ -1,35 +1,59 @@
 ---
+import { getCollection } from "astro:content";
+import type { Company } from "../data/companies";
 import { profile } from "../data/profile";
+
+// Never include drafts (set `draft: false` to publish a writeup).
+const projects = await getCollection("projects", ({ data }) => !data.draft);
+
+// Projects built for a given company, matched on the `company` field.
+const projectsFor = (company: Company) =>
+  projects
+    .filter((project) => project.data.company === company)
+    .toSorted((a, b) => a.data.order - b.data.order);
 ---
 
-<ol class="space-y-6">
+<ol class="relative ml-1.5 border-l border-zinc-200 dark:border-zinc-800">
   {
-    profile.workHistory.map((job) => (
-      <li class="grid gap-1 sm:grid-cols-[8rem_1fr] sm:gap-4">
-        <span class="pt-0.5 font-mono text-sm text-zinc-500 dark:text-zinc-400">
-          {job.period}
-        </span>
-        <div class="space-y-1">
-          <h3 class="font-medium">
-            {job.role} ·{" "}
-            {job.url ? (
-              <a
-                href={job.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-accent-600 hover:underline dark:text-accent-400"
-              >
-                {job.company}
-              </a>
-            ) : (
-              <span>{job.company}</span>
-            )}
-          </h3>
-          <p class="text-sm text-zinc-600 dark:text-zinc-400">
-            {job.summary}
+    profile.workHistory.map((job) => {
+      const jobProjects = projectsFor(job.company);
+      return (
+        <li class="relative ml-6 pb-10 last:pb-0">
+          <span
+            aria-hidden="true"
+            class="absolute -left-[30.5px] top-1 h-3 w-3 rounded-full border-2 border-white bg-accent-500 dark:border-zinc-950"
+          />
+          <p class="font-mono text-xs text-zinc-500 dark:text-zinc-400">
+            {job.period}
           </p>
-        </div>
-      </li>
-    ))
+          <h3 class="mt-1 font-medium">
+            {job.role} ·{" "}
+            <span class="text-zinc-700 dark:text-zinc-300">{job.company}</span>
+          </h3>
+          {job.highlights && job.highlights.length > 0 && (
+            <ul class="mt-2 list-disc space-y-1 pl-4 text-sm text-zinc-600 marker:text-zinc-300 dark:text-zinc-400 dark:marker:text-zinc-600">
+              {job.highlights.map((highlight) => (
+                <li>{highlight}</li>
+              ))}
+            </ul>
+          )}
+          {jobProjects.length > 0 && (
+            <ul class="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <li class="text-zinc-500 dark:text-zinc-400">Projects:</li>
+              {jobProjects.map((project) => (
+                <li>
+                  <a
+                    href={`/projects/${project.id}`}
+                    class="rounded-full bg-zinc-100 px-2.5 py-0.5 text-accent-600 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-accent-400 dark:hover:bg-zinc-700"
+                  >
+                    {project.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      );
+    })
   }
 </ol>

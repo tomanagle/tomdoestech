@@ -1,12 +1,12 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ProjectCard from "../../components/ProjectCard.astro";
+import ProjectsExplorer, {
+  type ProjectSummary,
+} from "../../components/ProjectsExplorer.tsx";
 
-// Hide drafts in production; show them while developing.
-const projects = await getCollection("projects", ({ data }) =>
-  import.meta.env.PROD ? !data.draft : true,
-);
+// Never include drafts (set `draft: false` to publish a writeup).
+const projects = await getCollection("projects", ({ data }) => !data.draft);
 
 // Featured first, then by ascending `order`, then alphabetically.
 const sorted = projects.toSorted((a, b) => {
@@ -14,32 +14,35 @@ const sorted = projects.toSorted((a, b) => {
   if (a.data.order !== b.data.order) return a.data.order - b.data.order;
   return a.data.title.localeCompare(b.data.title);
 });
+
+// Serialisable shape handed to the filtering island.
+const summaries: ProjectSummary[] = sorted.map((project) => ({
+  id: project.id,
+  title: project.data.title,
+  description: project.data.description,
+  company: project.data.company,
+  tech: project.data.tech,
+  period: project.data.period,
+}));
 ---
 
-<BaseLayout
-  title="Projects"
-  description="Writeups of projects I've worked on."
->
+<BaseLayout title="Projects" description="Writeups of projects I've worked on.">
   <section class="space-y-8">
     <header class="space-y-2">
       <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Projects</h1>
       <p class="text-zinc-600 dark:text-zinc-400">
-        Writeups of things I've built — the context, how I implemented them,
-        and what I learned.
+        Writeups of things I've built — the context, how I implemented them, and
+        what I learned. Filter by company or technology.
       </p>
     </header>
 
     {
-      sorted.length === 0 ? (
+      summaries.length === 0 ? (
         <p class="text-zinc-500 dark:text-zinc-400">
           No projects published yet — check back soon.
         </p>
       ) : (
-        <div class="grid gap-4">
-          {sorted.map((project) => (
-            <ProjectCard project={project} />
-          ))}
-        </div>
+        <ProjectsExplorer client:load projects={summaries} />
       )
     }
   </section>

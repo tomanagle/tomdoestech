@@ -1,5 +1,9 @@
 import { glob } from "astro/loaders";
-import { defineCollection, z } from "astro:content";
+import { z } from "astro/zod";
+import { defineCollection } from "astro:content";
+
+import { COMPANIES } from "./data/companies";
+import { TECHNOLOGIES } from "./data/technologies";
 
 const projects = defineCollection({
   loader: glob({ pattern: "**/*.mdx", base: "./src/content/projects" }),
@@ -9,15 +13,13 @@ const projects = defineCollection({
       // Used on cards and as the page meta description.
       description: z.string(),
       role: z.string().optional(),
-      tech: z.array(z.string()).default([]),
+      // Company this was built for (see src/data/companies.ts). Shared with the
+      // work-history timeline so a project cross-links to the matching job.
+      company: z.enum(COMPANIES).optional(),
+      // Constrained to the shared list so projects and filters stay in sync.
+      tech: z.array(z.enum(TECHNOLOGIES)).default([]),
       // Free-form, e.g. "2024" or "Mar–Jun 2024".
       period: z.string().optional(),
-      links: z
-        .object({
-          repo: z.string().url().optional(),
-          live: z.string().url().optional(),
-        })
-        .optional(),
       cover: image().optional(),
       // Surface near the top of the projects list.
       featured: z.boolean().default(false),

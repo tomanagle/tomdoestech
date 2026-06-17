@@ -4,10 +4,13 @@ import type { GetStaticPaths } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Prose from "../../components/Prose.astro";
 import Callout from "../../components/mdx/Callout.astro";
+import Image from "../../components/mdx/Image.astro";
 
 export const getStaticPaths = (async () => {
-  const projects = await getCollection("projects", ({ data }) =>
-    import.meta.env.PROD ? !data.draft : true,
+  // Never include drafts — they get no published page.
+  const projects = await getCollection(
+    "projects",
+    ({ data }) => !data.draft,
   );
   return projects.map((entry) => ({
     params: { slug: entry.id },
@@ -18,11 +21,6 @@ export const getStaticPaths = (async () => {
 const { entry } = Astro.props;
 const { data } = entry;
 const { Content } = await render(entry);
-
-const externalLinks = [
-  data.links?.live && { label: "Live", url: data.links.live },
-  data.links?.repo && { label: "Source", url: data.links.repo },
-].filter(Boolean) as { label: string; url: string }[];
 ---
 
 <BaseLayout title={data.title} description={data.description}>
@@ -58,29 +56,10 @@ const externalLinks = [
           </ul>
         )
       }
-
-      {
-        externalLinks.length > 0 && (
-          <ul class="flex flex-wrap gap-4 text-sm">
-            {externalLinks.map((link) => (
-              <li>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-accent-600 hover:underline dark:text-accent-400"
-                >
-                  {link.label} ↗
-                </a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
     </header>
 
     <Prose>
-      <Content components={{ Callout }} />
+      <Content components={{ Callout, img: Image }} />
     </Prose>
   </article>
 </BaseLayout>

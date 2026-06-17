@@ -1,0 +1,21 @@
+---
+// Image used inside MDX writeups. Mapped to the `img` element in
+// projects/[...slug].astro, so both markdown images (`![alt](src)`) and
+// literal <img> tags get rounded corners and stay within the page width.
+interface Props {
+  src: string;
+  alt?: string;
+  title?: string;
+}
+
+const { src, alt = "", title } = Astro.props;
+---
+
+<img
+  src={src}
+  alt={alt}
+  title={title}
+  loading="lazy"
+  decoding="async"
+  class="my-6 h-auto max-w-full rounded-lg border border-zinc-200 dark:border-zinc-800"
+/>
