@@ -149,6 +149,7 @@ function FilterGroup({ label, options, selected, onToggle }: FilterGroupProps) {
             key={option}
             type="button"
             aria-pressed={active}
+            aria-label={`Filter by ${option}`}
             onClick={() => onToggle(option)}
             className={
               active
