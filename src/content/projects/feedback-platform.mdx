@@ -1,6 +1,6 @@
 ---
 title: Feedback platform
-description: Aggregate products from multiple sources into a single, unified catalog for solar system designs
+description: "A configurable, multilingual feedback platform for post-order and in-field service: versioned forms, an embeddable renderer, and individual plus aggregate reporting."
 role: Lead engineer
 company: Localz (Descartes)
 tech:
@@ -8,19 +8,36 @@ tech:
   - GraphQL
   - React.js
   - Kafka
-period: "2021"
+period: "2021-2022"
 featured: true
 order: 1
-draft: true
+draft: false
 ---
-
-import Callout from "../../components/mdx/Callout.astro";
-import CounterDemo from "../../components/demos/CounterDemo.tsx";
 
 ## Context & Background
 
+At the end of a Click and Collect order or an in-field service, customers were asked to leave feedback. The forms had to be customisable and they changed over time, so the platform needed to be easy to configure, multilingual and accessible.
+
+A few things made it more than a simple form builder. Negative feedback had to be routed to the right people for follow-up. When a form's questions changed, the results for the old questions still had to be interpretable, so history wasn't lost. Incomplete submissions needed to be captured too. And the results had to work two ways: individual responses for a single submission, and aggregates for reporting in a dashboard.
+
 ## Implementation
+
+I led the design and build, working with a product owner.
+
+Forms were made up of a small set of question types (text, multiple choice, rating). Behind them was a versioned schema that mapped question IDs to labels, so when a form changed, old results could still be interpreted against the version they were captured under. Nothing was lost when the questions changed.
+
+The API was GraphQL in TypeScript, handling both the forms and the results. I built the form renderer as a React component so the same renderer could be embedded in different customer portals and reused to power a live preview in the configuration UI. That meant whoever configured a form saw exactly what the customer would see.
+
+Completed results were published as debounced Kafka events into the [data pipeline](/projects/event-analytics-pipeline), and a dashboard module rendered both the aggregates across dynamic questions and the individual responses for each submission.
+
+## Outcomes
+
+- Handles over a million submissions a year.
+- In use by major brands.
+- A 15-45% feedback rate, depending on the brand.
+- Negative feedback could be actioned in real time.
+- Gave teams better signal for future product and service improvements.
 
 ## What Went Well
 
-## What I'd Do Differently
+Building the form renderer as a single React component was the decision that paid off most. The same component powered both the embedded forms across portals and the live preview, so what you configured was exactly what customers saw, and it was easy to test.
