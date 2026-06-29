@@ -25,6 +25,12 @@ I worked with a product owner and another senior engineer to grow this from a si
 
 A lot of the work went into the parts you don't see: the guardrails that keep operator-authored rules safe to run, and an execution model that applies rules in a predictable order so they compose together correctly.
 
+## Outcomes
+
+- Hundreds of rules authored in production.
+- Thousands of customer quotes generated with accurate bills of materials.
+- No production incidents to date.
+
 ## What Went Well
 
 One of the rule types allowed the operator to write equations that return boolean values "should this SKU be added to the BOM?" and values "how many of this SKU should be added?". The engine was a simple interpreter that took in context from the solar design and the current BOM as the time of the execution. Because the syntax was strict and it only had 2 return types, writing the equations was simple enough for a non-developer, but made the engine much more flexible.
