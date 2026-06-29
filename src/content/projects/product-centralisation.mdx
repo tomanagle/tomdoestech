@@ -1,29 +1,47 @@
 ---
 title: Product centralisation
-description: Aggregate products from multiple sources into a single, unified catalog for solar system designs
+description: "A single, unified product catalog that ingests and merges thousands of products from multiple providers, so each product stays identifiable across every integration."
 role: Lead engineer
 company: UPowr
 tech:
   - TypeScript
-  - GitHub Actions
   - PostgreSQL
+  - S3
+  - GitHub Actions
 period: "2025"
 featured: true
 order: 1
-draft: true
+draft: false
 ---
-
-import Callout from "../../components/mdx/Callout.astro";
-import CounterDemo from "../../components/demos/CounterDemo.tsx";
 
 ## Context & Background
 
+A solar design is made up of products: panels, inverters, batteries, EV chargers and heat pumps, and there are thousands of them. The hard part is that the same physical product looks different everywhere. Each vendor has its own SKU, and each integration has its own SKU for that product too, so a single product needs to be identifiable across all of them. Products also carry a lot of attached data (images, data sheets, safety sheets, owner's and installation manuals), and the attributes differ from one product to the next. On top of that, every integration maps a product's properties differently.
+
+Before this, all of that was fragmented. Pricing, technical specifications and assets lived in different places, and making a new piece of hardware available meant several manual steps across those systems. We needed to ingest and merge products from multiple providers into one place, so that integrations could rely on a single, consistent product.
+
 ## Implementation
 
+I co-led the design and build with two other senior engineers, working closely with a product owner.
+
+At the core is a document-oriented data model: each product is a single document that can represent one or more provider products merged together. To make that work we built a mapping dialect, a small language for describing how a given provider's fields map onto our product, so a product from any source could be stored as one entity. PostgreSQL sat in front of the documents as a search cache, with full-text search and pgvector for similarity search.
+
+The ingestion pipeline was file-driven. Providers' files landed in an S3 bucket, the system worked out which files were new or changed, and it updated the database from there. A single product could be assembled from several source files merged together, so the merged record carried references back to every source it came from. Local edits were handled by treating "local" as just another source and merging it in last, so a local change would override anything a provider supplied.
+
+The interesting decision was matching: working out when two providers' products are actually the same product. We prototyped an AI approach, using a blocking strategy to cut down the number of comparisons and an agent that returned a match score for each candidate pair. We didn't ship it. With human review it would have been too slow and too expensive at our data size, and we didn't need the catalog to be perfect, just good enough to enable integrations. So we went with a simpler deterministic approach, normalising brands and matching models, and accepted that there would be some duplicates.
+
+## Outcomes
+
+- Automated away the manual, multi-step process of making new hardware available.
+- Unified 50,000+ products from two providers into a single catalog.
+- Enabled key integrations with other solar design platforms and rebate providers.
 
 ## What Went Well
 
+The mapping dialect was the part that paid off most. Storing products from different providers as a single entity, described declaratively, made the catalog much easier to manage and to search across integrations.
 
 ## What I'd Do Differently
 
+Two things. On matching, I'd flip the order: do the deterministic brand and model matching first, then reach for AI only on the leftovers that don't match cleanly (the cases where brands or model names differ between providers but it's really the same product). That keeps the AI cost and latency on the small, hard subset instead of the whole catalog.
 
+On ingestion, I'd move the heavy lifting into an external ETL step that builds a SQLite database in S3, then use that to populate Postgres. The ingestion would run once and the same result could feed every environment, rather than each environment ingesting separately.
