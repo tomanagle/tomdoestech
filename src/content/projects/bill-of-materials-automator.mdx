@@ -10,11 +10,8 @@ tech:
 period: "2024"
 featured: true
 order: 1
-draft: true
+draft: false
 ---
-
-import Flow from "../../components/diagrams/Flow.astro";
-import Branch from "../../components/diagrams/Branch.astro";
 
 ## Context & Background
 
@@ -24,82 +21,13 @@ Encoding all of that in application code would have meant a constant maintenance
 
 ## Implementation
 
-I led the work to grow this from a single rule type into a small rules engine that non-developers could safely author against. When I joined, it could already add components based on the presence of other components, modelled as a directed acyclic graph. I designed and delivered three further rule types (conditional, fixed, and bundle rules), along with the guardrails that make operator-authored rules safe to run.
+I worked with a product owner and another senior engineer to grow this from a single kind of rule into a rules engine that non-developers could safely author against. The people who own the pricing and BOM logic can define their own rules, and the engine applies them to a design to produce the bill of materials, rather than that logic being hard-coded by engineers.
 
-At a high level, the engine loads the active rules for a project, groups them by type, and runs them in a defined order. Each type decides *what* gets added and *when*.
-
-<Branch
-  from="BOM rule"
-  fromBody="Active rules are grouped by type before the BOM is built."
-  branches={[
-    {
-      label: "SKU-based",
-      title: "Component-driven",
-      body: "Adds components when other components are present, modelled as a directed acyclic graph.",
-    },
-    {
-      label: "Conditional",
-      title: "Condition-driven",
-      body: "Adds components when an expression over the design and site evaluates true.",
-    },
-    {
-      label: "Fixed",
-      title: "Always-on",
-      body: "Adds hardware or fees every time; quantities can be dynamic formulas.",
-    },
-    {
-      label: "Bundle",
-      title: "Grouped",
-      body: "Represents components that are sold and priced together as a single parent item.",
-    },
-  ]}
-  caption="The rule types the engine runs."
-/>
-
-**Conditional rules** are powered by a small, dependency-free expression language. Operators can express conditions and quantities as formulas (mapping over the rows of a design, rounding up to whole units, and so on) rather than waiting on an engineer to ship a change.
-
-**Fixed rules** add hardware and fees, and they surfaced a subtle ordering problem. Rules that add hardware need to run early, so later rules can build on what they add. But some rules calculate their quantities from running totals (like total hardware or installation cost) that only exist once most of the BOM has been built. I split fixed rules into two passes based on whether a rule depends on those totals, so each rule runs at the only point where its inputs are actually available.
-
-<Branch
-  from="Fixed rule"
-  fromBody="Split by whether the rule depends on running totals."
-  branches={[
-    {
-      label: "adds hardware",
-      title: "Early pass",
-      body: "Runs up front so component- and condition-driven rules can build on what it adds.",
-    },
-    {
-      label: "depends on totals",
-      title: "Final pass",
-      body: "Quantities depend on running totals that only exist once the rest of the BOM has run.",
-    },
-  ]}
-  caption="Fixed rules run in whichever pass makes their inputs available."
-/>
-
-### Bundles
-
-Bundles represent a set of components that are sold and priced together (a kit that is really a dozen smaller parts) under a single parent item. The interesting part is that bundle handling runs *in reverse*: instead of adding items to a design, it recognises when a finished design already contains the components that make up a known bundle and collapses them into a single priced line.
-
-<Flow
-  steps={[
-    {
-      title: "Finished design",
-      body: "Start from the components already on a completed design.",
-    },
-    {
-      title: "Recognise a known bundle",
-      body: "Detect when the design contains the components that make up a defined bundle.",
-    },
-    {
-      title: "Collapse into one priced item",
-      body: "Represent those components as a single parent item, ready to price.",
-    },
-  ]}
-  caption="Bundle handling runs in reverse: it recognises bundles within a design rather than building them up."
-/>
+A lot of the work went into the parts you don't see: the guardrails that keep operator-authored rules safe to run, and an execution model that applies rules in a predictable order so they compose together correctly.
 
 ## What Went Well
 
+One of the rule types allowed the operator to write equations that return boolean values "should this SKU be added to the BOM?" and values "how many of this SKU should be added?". The engine was a simple interpreter that took in context from the solar design and the current BOM as the time of the execution. Because the syntax was strict and it only had 2 return types, writing the equations was simple enough for a non-developer, but made the engine much more flexible.
+
 ## What I'd Do Differently
+The rules ended up being imperative: each rule type was a different way of telling the engine what to do, so an operator had to pick the right type before they could write anything, I'd make them declarative instead. A single rule format that holds all the building blocks (how components relate to each other and the conditions that apply) so operators just describe the rule they want and the engine works out how to run it. It would have been simpler to learn and simpler to extend, without adding a new rule type every time we needed something new.

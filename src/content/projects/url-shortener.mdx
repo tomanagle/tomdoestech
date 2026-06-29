@@ -1,24 +1,35 @@
 ---
 title: URL shortener
-description: Aggregate products from multiple sources into a single, unified catalog for solar system designs
+description: "A multi-tenant URL shortener for customer SMS links: configurable without redeploys, with custom domains and click analytics."
 role: Lead engineer
 company: Localz (Descartes)
 tech:
-  - Fastify
   - TypeScript
-period: "2015"
+  - Fastify
+  - DynamoDB
+  - Kafka
+period: "2020"
 featured: true
 order: 1
-draft: true
+draft: false
 ---
-
-import Callout from "../../components/mdx/Callout.astro";
-import CounterDemo from "../../components/demos/CounterDemo.tsx";
 
 ## Context & Background
 
+Customers received SMS links to a portal where they could track a Click and Collect order or see where their driver was for in-field work. The platform was multi-tenant, so each link had to carry both the tenant and the order it pointed to.
+
+The existing shortener was a single HTML file with hard-coded values. That worked fine when there were only a couple of customers, but every change meant a re-deploy. We needed something that could be configured without deploying, let tenants customise their keys, and was fast and globally available.
+
 ## Implementation
+
+I built a small API in Fastify and TypeScript that handled the redirects and the configuration. The key-to-tenant mapping lived in DynamoDB, and the API cached it in memory for speed, evicting the cache when the config changed so updates took effect without a deploy.
+
+Redirects were 302s, and every click was logged to Kafka, which fed the [data pipeline](/projects/event-analytics-pipeline) for analytics. I also added domain white-labeling so each tenant could serve links from their own custom domain.
 
 ## What Went Well
 
+DynamoDB was the right call. It was fast, globally available, and the data model was simple enough that we didn't need a relational database. A nice extra was configuring a preview image per tenant, so the SMS client could show a preview of the destination in the message itself, which was a small but nice touch for the customer experience.
+
 ## What I'd Do Differently
+
+Domain white-labeling had a rough edge: every custom domain needed the operations team to install an SSL certificate by hand. I'd automate that with something like Caddy or trust-dns to provision certificates per domain automatically, which would have made adding a new domain much faster and taken ops out of the loop.

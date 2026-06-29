@@ -1,31 +1,31 @@
 ---
 title: Event hub
-description: Aggregate events from multiple sources into a single, unified hub for real-time processing
-role: Lead engineer
+description: "An interactive event app for conference delegates: networking and chat, live session feedback, and content synced from Salesforce."
+role: Lead developer
 company: Procurement Leaders
 tech:
   - Next.js
   - GraphQL
   - TypeScript
   - MongoDB
-period: "2023"
+period: "2016-2018"
 featured: true
 order: 1
-draft: true
+draft: false
 ---
 
-import Callout from "../../components/mdx/Callout.astro";
-import CounterDemo from "../../components/demos/CounterDemo.tsx";
-
 ## Context & Background
-Procurement Leaders hosted several large-scale events for procurement professionals. When I first joined the on-the-day content was being served to the delegates from a static websites. It shows the agends, speakers and sponsors. The pages were manually built for each event had no opportunity for interactivity.
+
+Procurement Leaders ran several large-scale events for procurement professionals. When I joined, the on-the-day content was served to delegates from static websites: the agenda, speakers and sponsors. Each event's pages were built by hand, and there was no room for interactivity.
 
 ## Implementation
-- Allowed delegates to see other delegates, connect and chat to each other
-- Allowed delegates to give feedback on sessions and speakers
-- Automatically ingested content from Salesforce so updates to content were automatic
+
+I built an event hub with Next.js, GraphQL and MongoDB that turned those static pages into something interactive. Delegates could see who else was attending, connect and chat with each other, and give feedback on sessions and speakers during the event. The content (agenda, speakers, sponsors) was ingested automatically from Salesforce, so updates flowed through without anyone rebuilding a page by hand.
 
 ## What Went Well
 
+The Salesforce integration meant the content was always current, so the events team no longer had to update the site by hand. And because session feedback was real-time, we got more useful responses: delegates could rate a session while it was still fresh in their minds.
+
 ## What I'd Do Differently
-- Build a native application for delegates to install before the day of the event
+
+I'd build a native app that delegates install before the event so we could use push notifications to remind them to give feedback on sessions, and to let them know when someone has sent them a message. That would have increased engagement and made the networking more effective.

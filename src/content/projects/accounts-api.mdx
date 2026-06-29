@@ -30,4 +30,4 @@ The platform is multi-regional with data sovereignty requirements, so users need
 The service was deployed and integrated into the main configuration platform quickly. The OAuth flow gave the wider Descartes user base seamless access. The access and refresh tokens let users have long-lived sessions without compromising security.
 
 ## What I'd Do Differently
-I'd store password hashes in DynamoDB instead of MongoDB, so a user would have a single password across all regions rather than one per region. I'd also store the project and role relationships in PostgreSQL instead of MongoDB, because the data was highly relational and needed complex queries to work out access levels.
+I'd store password hashes in DynamoDB instead of MongoDB, so a user would have a single password across all regions rather than one per region. I'd also store the project and role relationships in PostgreSQL instead of MongoDB, because the data was highly relational and needed complex queries to compute out access levels.
