@@ -58,7 +58,30 @@ const personLd = {
       </div>
     </div>
 
-    <div class="mt-7"><SocialLinks /></div>
+    <div class="mt-7 flex flex-wrap items-center gap-2.5">
+      <SocialLinks />
+      <a
+        href="/Tom%20Nagle%20Resume.pdf"
+        download="Tom-Nagle-Resume.pdf"
+        class="inline-flex items-center gap-2 rounded-full bg-accent px-3.5 py-2 text-sm font-medium text-accent-contrast transition-colors hover:bg-accent-strong"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="h-4 w-4"
+          aria-hidden="true"
+        >
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Download resume
+      </a>
+    </div>
 
     <div class="mt-11 grid gap-3.5">
       {
