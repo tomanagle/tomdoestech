@@ -77,7 +77,7 @@ export const profile: Profile = {
     },
   ],
   techStack: [
-    { category: "Languages", items: ["TypeScript", "JavaScript", "Go", "PHP"] },
+    { category: "Languages", items: ["TypeScript", "JavaScript", "Go"] },
     { category: "Backend", items: ["Node.js", "Fastify", "GraphQL", "REST"] },
     { category: "Frontend", items: ["React.js", "Next.js", "Tailwind CSS"] },
     {
@@ -86,7 +86,18 @@ export const profile: Profile = {
     },
     {
       category: "Cloud & DevOps",
-      items: ["AWS", "Cloudflare Workers", "Docker", "GitHub Actions"],
+      items: [
+        "AWS",
+        "DynamoDB",
+        "SQS",
+        "Cloudflare",
+        "Workers",
+        "D1",
+        "KV",
+        "Queues",
+        "Docker",
+        "GitHub Actions",
+      ],
     },
   ],
   workHistory: [

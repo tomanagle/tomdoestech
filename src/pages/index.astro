@@ -4,6 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SocialLinks from "../components/SocialLinks.astro";
 import WorkHistory from "../components/WorkHistory.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import ContributionGraph from "../components/ContributionGraph.astro";
 import { profile } from "../data/profile";
 
 // Never include drafts (set `draft: false` to publish a writeup).
@@ -33,107 +34,115 @@ const personLd = {
     set:html={JSON.stringify(personLd)}
   />
 
-  <!-- Hero -->
-  <section class="hero relative isolate pt-10 pb-14">
-    <div class="terminal">
-      <div class="terminal__bar" aria-hidden="true">
-        <span class="dot dot--r"></span>
-        <span class="dot dot--y"></span>
-        <span class="dot dot--g"></span>
-        <span class="terminal__title">tom@tomdoes.tech ~</span>
+  <!-- Hero (intro) in its own container -->
+  <div class="container">
+    <section class="hero relative isolate pt-10 pb-14">
+      <div class="terminal">
+        <div class="terminal__bar" aria-hidden="true">
+          <span class="dot dot--r"></span>
+          <span class="dot dot--y"></span>
+          <span class="dot dot--g"></span>
+          <span class="terminal__title">tom@tomdoes.tech ~</span>
+        </div>
+        <div class="terminal__body">
+          <h1
+            class="hero-name text-3xl font-bold tracking-tight sm:text-4xl"
+            aria-label={profile.name}
+          >
+            <span class="prompt" aria-hidden="true">&gt;</span><span
+              class="typed">{profile.name}</span
+            ><span class="caret" aria-hidden="true"></span>
+          </h1>
+          <p class="term-line term-role">
+            Senior Software Engineer · Sunshine Coast, QLD
+          </p>
+          <p class="term-line term-bio">{profile.bio.intro}</p>
+        </div>
       </div>
-      <div class="terminal__body">
-        <h1
-          class="hero-name text-3xl font-bold tracking-tight sm:text-4xl"
-          aria-label={profile.name}
+
+      <div class="mt-7 flex flex-wrap items-center gap-2.5">
+        <SocialLinks />
+        <a
+          href="/Tom%20Nagle%20Resume.pdf"
+          download="Tom-Nagle-Resume.pdf"
+          class="inline-flex items-center gap-2 rounded-full bg-accent px-3.5 py-2 text-sm font-medium text-accent-contrast transition-colors hover:bg-accent-strong"
         >
-          <span class="prompt" aria-hidden="true">&gt;</span><span
-            class="typed">{profile.name}</span
-          ><span class="caret" aria-hidden="true"></span>
-        </h1>
-        <p class="term-line term-role">
-          Senior Software Engineer · Sunshine Coast, QLD
-        </p>
-        <p class="term-line term-bio">{profile.bio.intro}</p>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download resume
+        </a>
       </div>
-    </div>
 
-    <div class="mt-7 flex flex-wrap items-center gap-2.5">
-      <SocialLinks />
-      <a
-        href="/Tom%20Nagle%20Resume.pdf"
-        download="Tom-Nagle-Resume.pdf"
-        class="inline-flex items-center gap-2 rounded-full bg-accent px-3.5 py-2 text-sm font-medium text-accent-contrast transition-colors hover:bg-accent-strong"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="h-4 w-4"
-          aria-hidden="true"
-        >
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        Download resume
-      </a>
-    </div>
-
-    <div class="mt-11 grid gap-3.5">
-      {
-        profile.techStack.map((group) => (
-          <div class="grid items-start gap-x-5 gap-y-1.5 sm:grid-cols-[8rem_1fr]">
-            <span class="font-mono text-sm tracking-[0.1em] text-faint uppercase sm:pt-1.5">
-              {group.category}
-            </span>
-            <div class="flex flex-wrap gap-2">
-              {group.items.map((tech) => (
-                <a
-                  href={`/projects?tech=${encodeURIComponent(tech)}`}
-                  class="rounded-lg border border-transparent bg-surface-2 px-2.5 py-1 text-sm transition-colors hover:border-accent hover:text-accent-strong"
-                >
-                  <span class="sr-only">View projects using </span>{tech}
-                </a>
-              ))}
+      <div class="mt-11 grid gap-3.5">
+        {
+          profile.techStack.map((group) => (
+            <div class="grid items-start gap-x-5 gap-y-1.5 sm:grid-cols-[8rem_1fr]">
+              <span class="font-mono text-sm tracking-[0.1em] text-faint uppercase sm:pt-1.5">
+                {group.category}
+              </span>
+              <div class="flex flex-wrap gap-2">
+                {group.items.map((tech) => (
+                  <a
+                    href={`/projects?tech=${encodeURIComponent(tech)}`}
+                    class="rounded-lg border border-transparent bg-surface-2 px-2.5 py-1 text-sm transition-colors hover:border-accent hover:text-accent-strong"
+                  >
+                    <span class="sr-only">View projects using </span>{tech}
+                  </a>
+                ))}
+              </div>
             </div>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+
+  <!-- Full-width contribution graph: divider between hero and body -->
+  <ContributionGraph />
+
+  <!-- Body in its own container -->
+  <div class="container">
+    <!-- Experience (graph band above already acts as the divider) -->
+    <section id="work" class="py-16">
+      <h2 class="mb-7 font-mono text-sm tracking-[0.14em] text-faint uppercase">
+        Experience
+      </h2>
+      <WorkHistory />
+    </section>
+
+    <!-- Selected projects -->
+    {
+      featured.length > 0 && (
+        <section class="border-t border-border py-16">
+          <div class="mb-7 flex items-baseline justify-between gap-4">
+            <h2 class="font-mono text-sm tracking-[0.14em] text-faint uppercase">
+              Selected projects
+            </h2>
+            <a href="/projects" class="text-sm text-accent hover:underline">
+              All projects →
+            </a>
           </div>
-        ))
-      }
-    </div>
-  </section>
-
-  <!-- Experience -->
-  <section id="work" class="border-t border-border py-16">
-    <h2 class="mb-7 font-mono text-sm tracking-[0.14em] text-faint uppercase">
-      Experience
-    </h2>
-    <WorkHistory />
-  </section>
-
-  <!-- Selected projects -->
-  {
-    featured.length > 0 && (
-      <section class="border-t border-border py-16">
-        <div class="mb-7 flex items-baseline justify-between gap-4">
-          <h2 class="font-mono text-sm tracking-[0.14em] text-faint uppercase">
-            Selected projects
-          </h2>
-          <a href="/projects" class="text-sm text-accent hover:underline">
-            All projects →
-          </a>
-        </div>
-        <div class="grid gap-4 sm:grid-cols-2">
-          {featured.map((project) => (
-            <ProjectCard project={project} />
-          ))}
-        </div>
-      </section>
-    )
-  }
+          <div class="grid gap-4 sm:grid-cols-2">
+            {featured.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </div>
 </BaseLayout>
 
 <style>

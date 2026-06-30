@@ -1,0 +1,287 @@
+---
+import { profile } from "../data/profile";
+
+// Derive the GitHub username from the profile's GitHub social link.
+const githubUrl = profile.socials.find((s) => s.label === "GitHub")?.url ?? "";
+const username = githubUrl.replace(/\/+$/, "").split("/").pop() ?? "tomanagle";
+
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+const formatDate = (iso: string) => {
+  const [y, m, d] = iso.split("-");
+  return `${Number(d)} ${MONTHS[Number(m) - 1]} ${y}`;
+};
+
+type Day = { date: string; level: number };
+
+// Fetch the public contribution calendar at build time and parse out each
+// day's date, intensity level (0-4) and contribution count. Wrapped so a
+// network failure never breaks the build - the graph simply won't render.
+let days: Day[] = [];
+const tipByDate = new Map<string, string>();
+
+try {
+  const res = await fetch(
+    `https://github.com/users/${username}/contributions`,
+    { headers: { "User-Agent": "tomdoes.tech build" } },
+  );
+  if (res.ok) {
+    const html = await res.text();
+
+    // Each day cell carries a date, a level and an element id.
+    const idToDate = new Map<string, string>();
+    const cellRe = /<td[^>]*class="[^"]*ContributionCalendar-day[^"]*"[^>]*>/g;
+    for (const [tag] of html.matchAll(cellRe)) {
+      const date = tag.match(/data-date="(\d{4}-\d{2}-\d{2})"/)?.[1];
+      const id = tag.match(/id="(contribution-day-component-[\d-]+)"/)?.[1];
+      const level = Number(tag.match(/data-level="(\d)"/)?.[1] ?? "0");
+      if (date) {
+        days.push({ date, level });
+        if (id) idToDate.set(id, date);
+      }
+    }
+
+    // The count lives in a matching <tool-tip>, e.g. "No contributions on
+    // July 6th." or "3 contributions on October 19th.". Reuse the count
+    // phrase, but pair it with our own date format (with the year).
+    const tipRe =
+      /<tool-tip[^>]*for="(contribution-day-component-[\d-]+)"[^>]*>([^<]*)<\/tool-tip>/g;
+    for (const [, id, text] of html.matchAll(tipRe)) {
+      const date = idToDate.get(id);
+      if (!date) continue;
+      const count = text.split(" on ")[0].trim();
+      tipByDate.set(date, `${count} on ${formatDate(date)}`);
+    }
+  }
+} catch {
+  days = [];
+}
+
+// Lay the days out into week columns (Sunday-first), matching GitHub's grid.
+const byDate = new Map(days.map((d) => [d.date, d.level]));
+const dates = [...byDate.keys()].toSorted();
+
+const CELL = 11;
+const GAP = 3;
+const STEP = CELL + GAP;
+
+type Rect = { x: number; y: number; level: number; tip: string };
+const rects: Rect[] = [];
+let numWeeks = 0;
+
+if (dates.length) {
+  const DAY_MS = 86_400_000;
+  const lastMs = new Date(`${dates[dates.length - 1]}T00:00:00Z`).getTime();
+  // Back up to the Sunday that starts the first column.
+  const firstSunday = new Date(`${dates[0]}T00:00:00Z`);
+  firstSunday.setUTCDate(firstSunday.getUTCDate() - firstSunday.getUTCDay());
+  const startMs = firstSunday.getTime();
+  const totalDays = Math.round((lastMs - startMs) / DAY_MS) + 1;
+
+  let col = -1;
+  for (let i = 0; i < totalDays; i += 1) {
+    const t = new Date(startMs + i * DAY_MS);
+    const dow = t.getUTCDay();
+    if (dow === 0) col += 1;
+    const iso = t.toISOString().slice(0, 10);
+    const level = byDate.has(iso) ? (byDate.get(iso) as number) : -1;
+    if (level >= 0) {
+      rects.push({
+        x: col * STEP,
+        y: dow * STEP,
+        level,
+        tip: tipByDate.get(iso) ?? formatDate(iso),
+      });
+    }
+  }
+  numWeeks = col + 1;
+}
+
+const width = Math.max(numWeeks * STEP - GAP, 0);
+const height = 7 * STEP - GAP;
+---
+
+{
+  rects.length > 0 && (
+    <section class="contrib">
+      <div class="contrib__inner">
+        <svg
+          class="contrib__svg"
+          viewBox={`0 0 ${width} ${height}`}
+          role="img"
+          aria-label={`GitHub contribution graph for ${username} over the last year`}
+          preserveAspectRatio="xMinYMid meet"
+        >
+          {rects.map((r) => (
+            <rect
+              x={r.x}
+              y={r.y}
+              width={CELL}
+              height={CELL}
+              rx="2"
+              ry="2"
+              class={`lvl lvl-${r.level}`}
+              data-tip={r.tip}
+            />
+          ))}
+        </svg>
+      </div>
+      <p class="contrib__caption">
+        <a
+          class="contrib__link"
+          href={githubUrl}
+          target="_blank"
+          rel="me noopener noreferrer"
+        >
+          github.com/{username}
+        </a>
+        <span class="contrib__sep" aria-hidden="true">·</span>
+        the last year
+      </p>
+      <div class="contrib__tip" aria-hidden="true" />
+    </section>
+  )
+}
+
+<style>
+  .contrib {
+    position: relative;
+    padding: 3.25rem 0 2.75rem;
+  }
+  /* Soft teal spotlight so the graph has presence instead of floating. */
+  .contrib::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(
+      60% 75% at 50% 45%,
+      color-mix(in srgb, var(--accent) 12%, transparent),
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+  .contrib__inner {
+    width: 100%;
+    max-width: 64rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+    /* Dissolve the squares into the page at the left and right edges. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 14%,
+      #000 86%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 14%,
+      #000 86%,
+      transparent
+    );
+  }
+  .contrib__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .contrib__caption {
+    margin-top: 1.2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--faint);
+  }
+  .contrib__link {
+    color: var(--faint);
+    transition: color 0.15s ease;
+  }
+  .contrib__link:hover {
+    color: var(--accent-strong);
+  }
+  .contrib__sep {
+    margin: 0 0.5rem;
+    opacity: 0.6;
+  }
+
+  /* Teal intensity scale, themed from the palette so it flips with dark/light. */
+  .lvl {
+    stroke: color-mix(in srgb, var(--border) 55%, transparent);
+    stroke-width: 0.5;
+  }
+  .lvl:hover {
+    stroke: var(--fg);
+    stroke-width: 1;
+  }
+  .lvl-0 {
+    fill: var(--surface-2);
+  }
+  .lvl-1 {
+    fill: color-mix(in srgb, var(--accent) 28%, var(--surface-2));
+  }
+  .lvl-2 {
+    fill: color-mix(in srgb, var(--accent) 52%, var(--surface-2));
+  }
+  .lvl-3 {
+    fill: color-mix(in srgb, var(--accent) 78%, var(--surface-2));
+  }
+  .lvl-4 {
+    fill: var(--accent);
+  }
+
+  /* Hover tooltip, GitHub-style: date + count. */
+  .contrib__tip {
+    position: fixed;
+    z-index: 60;
+    pointer-events: none;
+    padding: 0.3rem 0.55rem;
+    border-radius: 7px;
+    background: var(--surface-2);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.5);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+  }
+  .contrib__tip[data-show="true"] {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  const svg = document.querySelector<SVGElement>(".contrib__svg");
+  const tip = document.querySelector<HTMLElement>(".contrib__tip");
+
+  if (svg && tip) {
+    const show = (cell: Element) => {
+      const text = cell.getAttribute("data-tip");
+      if (!text) return;
+      tip.textContent = text;
+      const r = cell.getBoundingClientRect();
+      const above = r.top > 52;
+      tip.style.left = `${r.left + r.width / 2}px`;
+      tip.style.top = `${above ? r.top - 8 : r.bottom + 8}px`;
+      tip.style.transform = above
+        ? "translate(-50%, -100%)"
+        : "translate(-50%, 0)";
+      tip.dataset.show = "true";
+    };
+
+    svg.addEventListener("pointerover", (e) => {
+      const t = e.target as Element;
+      if (t.matches?.("rect[data-tip]")) show(t);
+    });
+    svg.addEventListener("pointerout", (e) => {
+      const t = e.target as Element;
+      if (t.matches?.("rect[data-tip]")) tip.dataset.show = "false";
+    });
+  }
+</script>

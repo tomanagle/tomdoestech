@@ -27,7 +27,8 @@ const summaries: ProjectSummary[] = sorted.map((project) => ({
 ---
 
 <BaseLayout title="Projects" description="Writeups of projects I've worked on.">
-  <section class="space-y-8 py-10">
+  <div class="container">
+    <section class="space-y-8 py-10">
     <header class="space-y-2">
       <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Projects</h1>
       <p class="text-fg">
@@ -43,5 +44,6 @@ const summaries: ProjectSummary[] = sorted.map((project) => ({
         <ProjectsExplorer client:load projects={summaries} />
       )
     }
-  </section>
+    </section>
+  </div>
 </BaseLayout>

@@ -25,7 +25,8 @@ const { Content } = await render(entry);
 ---
 
 <BaseLayout title={data.title} description={data.description}>
-  <article class="py-10">
+  <div class="container">
+    <article class="py-10">
     <a
       href="/projects"
       class="text-sm text-fg transition-colors hover:text-accent-strong"
@@ -66,5 +67,6 @@ const { Content } = await render(entry);
     <Prose>
       <Content components={{ Callout, img: Image }} />
     </Prose>
-  </article>
+    </article>
+  </div>
 </BaseLayout>

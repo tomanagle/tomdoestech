@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Page container: centered 60rem column with horizontal gutters.
+   Use class="container" instead of repeating mx-auto / max-w / px-6. */
+@utility container {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 60rem;
+  padding-inline: 1.5rem;
+}
+
 /* ============================================================
    Design tokens - "Teal" direction.
    Colors are referenced inline so utilities (bg-bg, text-fg, …) resolve to
