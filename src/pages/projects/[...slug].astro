@@ -24,7 +24,7 @@ const { data } = entry;
 const { Content } = await render(entry);
 ---
 
-<BaseLayout title={data.title} description={data.description}>
+<BaseLayout title={data.title} description={data.description} ogType="article">
   <div class="container">
     <article class="py-10">
     <a
