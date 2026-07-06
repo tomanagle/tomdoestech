@@ -57,7 +57,7 @@ export const profile: Profile = {
       "Tom Nagle is a senior software engineer building backends, data " +
       "pipelines, and products, based on the Sunshine Coast, QLD.",
     intro:
-      "Senior software engineer with a passion for building software that delights users. I enjoy getting into the technical details and working with product teams to solve real customer problems.",
+      "Senior software engineer with a passion for building products that delight users. I enjoy getting into the technical details and working with product teams to solve real customer problems. Over seven years at startups, I've led the design and development of several products, working across the whole stack.",
   },
   socials: [
     {
@@ -109,11 +109,11 @@ export const profile: Profile = {
           title: "Senior Software Engineer",
           period: "Feb 2024 - Present",
           highlights: [
-            "Lead the technical design and development of major features across the Node.js/TypeScript backend, Go services, and Flutter app.",
-            "Built a rules engine that lets non-developers automate the bill of materials for solar designs.",
-            "Co-led a platform that merged products from multiple providers into a single catalog, replacing a manual process and enabling key third-party integrations.",
-            "Lead architecture and technical design discussions, working closely with product and design teams.",
-            "Built and maintain end-to-end tests with Playwright to keep the product working as expected.",
+            "Led the technical design and development of major features across the Node.js/TypeScript backend, Go services and a Flutter app",
+            "Led the design of an external SDK, plugin system and key platform integrations",
+            "Led technical discussions and architectural designs",
+            "Designed, implemented and maintained complex workflows in Camunda",
+            "Develop and maintain E2E tests with Playwright",
           ],
         },
       ],
@@ -126,11 +126,11 @@ export const profile: Profile = {
           title: "Senior Software Engineer",
           period: "Sep 2019 - Feb 2024",
           highlights: [
-            "Led the design and build of a configurable, multilingual feedback platform used by major retail brands.",
-            "Re-platformed the analytics pipeline onto Snowflake and dbt, cutting dashboard query times from minutes to seconds.",
-            "Built a multi-tenant accounts and authentication service in Go with OAuth, across multiple regions with data-sovereignty requirements.",
-            "Built a multi-tenant URL shortener that became the entry point for the Click and Collect services of two of Australia's largest retailers.",
-            "Led a large customer-facing app in Next.js, GraphQL, and TypeScript, and designed REST and GraphQL APIs across several Go services.",
+            "Designed and built multi-tenant microservices in Go and Node.js/TypeScript on an event-driven architecture",
+            "Led a large customer-facing app in Next.js, GraphQL, and TypeScript",
+            "Re-platformed the Kafka-to-S3 analytics pipeline from Athena onto Snowflake and dbt",
+            "Built platform authentication in Go with OAuth 2.0",
+            "Led the design and implementation of a high-volume survey platform",
           ],
         },
       ],
@@ -144,11 +144,11 @@ export const profile: Profile = {
           title: "Development Lead",
           period: "Jan 2019 - Jun 2019",
           highlights: [
-            "Led and coached developers, owning technical solution design and code reviews.",
-            "Built an interactive event hub with Next.js, GraphQL, and MongoDB for Europe's largest procurement events, with live session feedback, networking, and content synced from Salesforce.",
-            "Developed GraphQL and REST APIs with Node.js, TypeScript, Apollo, Express, and MongoDB.",
-            "Built React applications with Next.js, Redux, and Apollo GraphQL.",
-            "Established CircleCI for CI/CD and configured Ubuntu/Nginx web servers.",
+            "Led and coached developers, owning solution design and code reviews",
+            "Designed and built GraphQL and REST APIs with Node.js, TypeScript, Apollo, Express, and MongoDB",
+            "Built React applications with Next.js, Redux, and Apollo GraphQL",
+            "Built an interactive event platform with a Salesforce integration",
+            "Established CI/CD with CircleCI and configured Ubuntu/Nginx servers",
           ],
         },
         {
