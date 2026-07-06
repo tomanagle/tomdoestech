@@ -1,0 +1,38 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+
+// Never include drafts (set `draft: false` to publish a post).
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+
+// Newest first.
+const sorted = posts.toSorted(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+
+<BaseLayout title="Blog" description="Posts on software engineering and the things I build.">
+  <div class="container">
+    <section class="space-y-8 py-10">
+      <header class="space-y-2">
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Blog</h1>
+        <p class="text-fg">
+          Posts on software engineering and the things I build.
+        </p>
+      </header>
+
+      {
+        sorted.length === 0 ? (
+          <p class="text-fg">No posts yet. Check back soon.</p>
+        ) : (
+          <div class="grid gap-4">
+            {sorted.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </div>
+        )
+      }
+    </section>
+  </div>
+</BaseLayout>

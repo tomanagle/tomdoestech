@@ -1,0 +1,57 @@
+---
+title: AI Observability Tooling
+description: "A look at the tooling required to integrate AI into a product"
+date: 2026-06-30
+draft: false
+---
+
+Calling an LLM inside your application seems like a simple task, after all they're serviced over HTTP. A simple call to the API, use the response.messages[0] and catch the errors if you're feeling fancy. However, AI introduces a whole host of new problems:
+
+- How do you easily switch between providers and models without managing a bunch of API tokens
+- How do you manage costs and avoid accidentally running up a huge bill
+- How do you monitor the quality of your prompts?
+- How do you monitor the quality of the responses?
+
+## Context
+At UPowr we have an existing platform that serves as the operations layer for solar installers & retailers. To better help our customers with their workflows, there's a need for AI integrations. Some of the integrations include:
+
+- A draft solar design generated from customer input
+- An LLM quality assurance check
+- AI vision to make sure on-site photos are of the right quality and show the right things
+
+## Observability Platforms
+Before integrating AI into the platform, the first step was to implement tooling to manage the integrations. I analysed several existing platforms against the requirements:
+- Self hostable and managed solution
+- Uses PostgreSQL as the database
+- OTel native
+- Provides prompt management
+- Provides human & LLM judgement of responses
+- Provides eval management
+
+From a long list, the options were narrowed down to Langfuse & Arize Pheonix. Both seems like great options, but Langfuse also required a ClickHouse database. While it wouldn't be a big deal to either deploy our own ClickHouse data base or use the managed solution, we were already in the process of scaling our infrastructure costs back.
+
+This is the comparison matrix we used to narrow the decision down.
+
+- `✓` = meets the requirement
+- `△` = partially meets it, or adjacent feature only
+- `✗` = does not appear to meet it
+- `?` = needs verification
+
+| Requirement | Traceway | Laminar | MLflow | Langfuse | Arize Phoenix | Helicone | Portkey | Traceloop / OpenLLMetry | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Self-hostable | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | △ | Traceloop/OpenLLMetry is self-hostable as instrumentation/collector plumbing, but less clearly a full self-hosted product UI. |
+| Cloud platform | ✓ | ✓ | △ | ✓ | ✓ | ✓ | ✓ | ✓ | MLflow cloud is typically via Databricks or your own hosted deployment rather than a single MLflow SaaS. |
+| OTel visualisation | ✓ | ✓ | ✓ | ✓ | ✓ | △ | △ | ✓ | Helicone and Portkey have observability/tracing, but are less purely OTel-first than Traceway, Phoenix, or OpenLLMetry. |
+| Prompt management | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Traceway appears focused on observability rather than prompt lifecycle. |
+| AI & Human judge | ✗ | △ | △ | ✓ | ✓ | △ | △ | △ | Phoenix and Langfuse are strongest here; Helicone centralizes reported scores rather than running all evals itself. |
+| Dataset management | ✗ | △ | ✓ | ✓ | ✓ | △ | △ | △ | Phoenix, MLflow, and Langfuse have the clearest dataset/experiment workflows. |
+| Session replay, including with different models | ✓ | ✓ | ✗ | △ | △ | △ | △ | △ | Laminar is strongest for agent/browser replay and rerun-style debugging; others may support trace replay, playground comparison, sessions, or request replay rather than browser replay. |
+| TS SDK | △ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Phoenix has dedicated TypeScript packages. Traceway has Node/JS integrations but dedicated TS SDK needs verification. |
+| Nice UI | △ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Subjective; validate with hands-on trials. |
+| Guardrails | ✗ | ✗ | △ | △ | △ | △ | ✓ | △ | Portkey is the strongest runtime guardrails/gateway candidate. Helicone's guardrails currently work with OpenAI models only. |
+| Experiments | ✗ | △ | ✓ | ✓ | ✓ | △ | ✓ | ✓ | Phoenix, MLflow, Langfuse, Portkey, and Traceloop are strongest on explicit experiment workflows. Helicone's Experiments product was deprecated on 2025-09-01. |
+
+
+## AI Gateways
+The next problem to solve is managing API keys & costs. The two options considered for the AI gateway were Cloudflare & OpenRouter.
+

@@ -30,4 +30,23 @@ const projects = defineCollection({
     }),
 });
 
-export const collections = { projects };
+const blog = defineCollection({
+  loader: glob({ pattern: "**/*.mdx", base: "./src/content/blog" }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      // Used on cards and as the page meta description.
+      description: z.string(),
+      // Publish date, e.g. "2026-06-30".
+      date: z.coerce.date(),
+      // Optional last-updated date.
+      updated: z.coerce.date().optional(),
+      // Free-form topic tags.
+      tags: z.array(z.string()).default([]),
+      cover: image().optional(),
+      // Hidden from production builds while in progress.
+      draft: z.boolean().default(false),
+    }),
+});
+
+export const collections = { projects, blog };
