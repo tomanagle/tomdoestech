@@ -1,0 +1,37 @@
+---
+title: Customer Experience Portal
+description: A customer experience portal that supports the solar system checkout and installation journey
+role: Lead engineer
+company: "UPowr" # must be one of src/data/companies.ts
+tech: # each must be one of src/data/technologies.ts
+  - TypeScript
+  - Node.js
+  - React.js
+  - Tanstack router
+  - Tanstack queryx
+period: "2026"
+featured: true
+order: 1
+draft: false
+---
+
+## Context & Background
+
+When customers purchase a solar system, battery or EV charger, they need to understand the system they are purchasing, understand the available rebates & loans and track the installation process. The existing portal was split across two applications, one Vue 2 and one Nuxt, and did not clearly communicate the information to the customer.
+
+In this project I worked with a Subject Matter Expert (SME) and a designer to build a new customer experience portal that would provide a single source of truth for customers to track their solar system checkout and installation journey.
+
+## Implementation
+
+To keep the transition from the old portal to the new portal as smooth as possible, we decided to use the existing APIs and expand on them where required, keeping them backwards compatible. I built the portal using Vite, React, Tanstack router and Tanstack query.
+
+Because the portal is a key part of the business, to de-risk the launch I implemented a feature flag that allowed the operator to define what share of new customers would get the old or the new portal. This meant that we could roll the portal out to a pool of randomly selected customers and have the customers continue to use the same version of the portal for the duration of their journey, without any disruption.
+
+To support the feature flag, I also implemented some operator tooling that allowed the operator to see which version of the portal a customer was using and change it if required.
+
+## What Went Well
+
+The new portal created a seamless experience for customers. It communicated what information they needed before signing the contract and what was going to happen to get their system installed.
+
+The new portal also has modular checkout components that allow us to easily implement new government loans and rebates as they become available.
+

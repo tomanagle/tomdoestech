@@ -79,7 +79,16 @@ export const profile: Profile = {
   techStack: [
     { category: "Languages", items: ["TypeScript", "JavaScript", "Go"] },
     { category: "Backend", items: ["Node.js", "Fastify", "GraphQL", "REST"] },
-    { category: "Frontend", items: ["React.js", "Next.js", "Tailwind CSS"] },
+    {
+      category: "Frontend",
+      items: [
+        "React.js",
+        "Next.js",
+        "Tailwind CSS",
+        "Tanstack query",
+        "Tanstack router",
+      ],
+    },
     {
       category: "Data",
       items: ["PostgreSQL", "MongoDB", "Kafka", "Snowflake", "dbt"],

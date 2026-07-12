@@ -39,6 +39,8 @@ export const TECHNOLOGIES = [
   "Fastify",
   "PHP",
   "CSS",
+  "Tanstack router",
+  "Tanstack query",
 ] as const;
 
 export type Technology = (typeof TECHNOLOGIES)[number];
