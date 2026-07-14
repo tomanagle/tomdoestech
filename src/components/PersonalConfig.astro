@@ -1,0 +1,158 @@
+---
+// Personal section rendered as a syntax-highlighted "config file".
+// Bookends the hero: the page opens in a terminal and closes in an editor.
+---x
+
+<figure class="editor" aria-label="personal.config.ts">
+  <figcaption class="editor__bar">
+    <span class="editor__tab">personal.config.ts</span>
+  </figcaption>
+  <pre class="editor__code"><code>
+    <span class="line"><span class="tok-kw">export</span> <span class="tok-kw">const</span> <span class="tok-name">life</span> <span class="tok-p">= {"{"}</span></span>
+    <span class="line line--in"><span class="tok-prop">location</span><span class="tok-p">: </span><span class="tok-str">"Noosa"</span><span class="tok-p">,</span></span>
+    <span class="line line--in"><span class="tok-prop">family</span><span class="tok-p">: [</span><span class="tok-str">"husband"</span><span class="tok-p">, </span><span class="tok-str">"father of 2"</span><span class="tok-p">],</span></span>
+    <span class="line line--in"><span class="tok-prop">enjoys</span><span class="tok-p">: [</span><span class="tok-str">"traveling"</span><span class="tok-p">, </span><span class="tok-str">"building side projects"</span><span class="tok-p">, </span><span class="tok-str">"gym"</span><span class="tok-p">],</span></span>
+    <span class="line line--in"><span class="tok-prop">sundays</span><span class="tok-p">: </span><span class="tok-str">"beach mornings with the family"</span><span class="tok-p">,</span></span>
+    <span class="line"><span class="tok-p">{"}"};</span><span class="editor__caret" aria-hidden="true"></span></span>
+  </code></pre>
+  <div class="editor__status" aria-hidden="true">
+    <span>TypeScript</span>
+    <span>Ln 5, Col 3 · UTF-8</span>
+  </div>
+</figure>
+
+<style>
+  /* Syntax colors. Keywords and names come from the site accent; strings get
+     a warm amber so the block reads as a real editor theme in both modes. */
+  .editor {
+    --code-string: #b45309;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    overflow: hidden;
+    box-shadow: 0 16px 40px -28px rgba(0, 0, 0, 0.5);
+    font-family: var(--font-mono);
+  }
+  @media (prefers-color-scheme: dark) {
+    .editor {
+      --code-string: #fbbf24;
+    }
+  }
+
+  /* Tab strip: active file tab sits flush with the code area below it. */
+  .editor__bar {
+    display: flex;
+    align-items: stretch;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .editor__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.8rem;
+    color: var(--fg);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    box-shadow: inset 0 2px 0 var(--accent);
+  }
+  .editor__tab::after {
+    content: "";
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: var(--faint);
+    opacity: 0.55;
+  }
+
+  .editor__code {
+    margin: 0;
+    padding: 1.1rem 1.3rem 1.2rem;
+    font-size: 0.875rem;
+    line-height: 1.85;
+    overflow-x: auto;
+    /* Collapse the source whitespace between line spans; each line keeps
+       its own spacing via white-space: pre below. */
+    white-space: normal;
+  }
+  .editor__code code {
+    counter-reset: line;
+    font-family: var(--font-mono);
+  }
+  .line {
+    display: block;
+    white-space: pre;
+    counter-increment: line;
+  }
+  .line::before {
+    content: counter(line, decimal-leading-zero) / "";
+    display: inline-block;
+    width: 2ch;
+    margin-right: 1.4ch;
+    text-align: right;
+    color: color-mix(in srgb, var(--faint) 55%, transparent);
+    user-select: none;
+  }
+  .line--in {
+    padding-left: 2ch;
+  }
+
+  .tok-kw {
+    color: var(--accent);
+  }
+  .tok-name {
+    color: var(--accent-strong);
+    font-weight: 600;
+  }
+  .tok-prop {
+    color: var(--fg);
+  }
+  .tok-str {
+    color: var(--code-string);
+  }
+  .tok-p {
+    color: var(--faint);
+  }
+
+  /* Thin editor caret resting after the closing brace, blinking in step
+     with the hero caret. */
+  .editor__caret {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    margin-left: 0.15ch;
+    vertical-align: -0.12em;
+    background: var(--accent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .editor__caret {
+      animation: editor-caret-blink 1.05s steps(1) infinite;
+    }
+  }
+  @keyframes editor-caret-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .editor__caret {
+      display: none;
+    }
+  }
+  :global(html[data-motion="off"]) .editor__caret {
+    display: none;
+  }
+
+  .editor__status {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.72rem;
+    color: var(--faint);
+    background: var(--surface-2);
+    border-top: 1px solid var(--border);
+  }
+</style>

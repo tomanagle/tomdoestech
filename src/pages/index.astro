@@ -5,6 +5,7 @@ import SocialLinks from "../components/SocialLinks.astro";
 import WorkHistory from "../components/WorkHistory.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import ContributionGraph from "../components/ContributionGraph.astro";
+import PersonalConfig from "../components/PersonalConfig.astro";
 import { profile } from "../data/profile";
 
 // Never include drafts (set `draft: false` to publish a writeup).
@@ -143,6 +144,14 @@ const personLd = {
         </section>
       )
     }
+
+    <!-- Personal -->
+    <section id="personal" class="scroll-mt-24 border-t border-border py-16">
+      <h2 class="mb-7 font-mono text-sm tracking-[0.14em] text-faint uppercase">
+        Personal
+      </h2>
+      <PersonalConfig />
+    </section>
   </div>
 </BaseLayout>
 
