@@ -57,7 +57,7 @@ export const profile: Profile = {
       "Tom Nagle is a senior software engineer building backends, data " +
       "pipelines, and products, based on the Sunshine Coast, QLD.",
     intro:
-      "Senior software engineer with a passion for building products that delight users. I enjoy getting into the technical details and working with product teams to solve real customer problems. Over seven years at startups, I've led the design and development of several products, working across the whole stack.",
+      "I'm a senior software engineer with 10+ years of experience, the last seven at startups. I work across the full stack and I've led products from concept to delivery. I like getting involved early, working with product managers and designers to understand the problem before deciding what to build. Outside of work I teach software engineering on YouTube as tomdoestech.",
   },
   socials: [
     {
