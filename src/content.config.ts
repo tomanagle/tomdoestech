@@ -27,6 +27,8 @@ const projects = defineCollection({
       order: z.number().default(0),
       // Hidden from production builds while in progress.
       draft: z.boolean().default(false),
+      // Opt in when the article contains animations readers may want to pause.
+      showMotionToggle: z.boolean().default(false),
     }),
 });
 
