@@ -1,0 +1,84 @@
+---
+title: Plugin authentication
+description: OAuth 2.0 authentication for externally hosted plugins, with a revocable context key for each installation.
+role: Lead engineer
+company: UPowr
+tech:
+  - TypeScript
+  - Node.js
+  - Go
+  - REST
+  - OAuth 2.0
+  - PostgreSQL
+period: "2025"
+featured: true
+order: 9
+draft: false
+---
+
+import Flow from "../../components/diagrams/Flow.astro";
+
+## Context & Background
+
+I built a plugin system so parts of a solar sales platform could be handled by external services. The first use was a Pylon integration for solar design and quoting. But the authentication had to work for plugins written by third parties and hosted anywhere.
+
+A single plugin service could support several platform environments and many separate installations. Every request had to identify the plugin making it and the installation it was acting for.
+
+Plugins could not depend on internal secrets or know how the platform's network was laid out. Plugin authors needed a conventional OAuth 2.0 API, with the platform keeping control of each installation and its permissions.
+
+## Implementation
+
+I split authentication into two pieces:
+
+- A signed machine-to-machine access token identifies the software making the call and carries its permitted scopes.
+- An opaque, revocable context key identifies one installation and resolves its platform environment and account context.
+
+The API checks both. A token for one plugin will not work with a context key belonging to another. An installation can also be disabled without changing the plugin's identity.
+
+<Flow
+  steps={[
+    {
+      title: "Register the plugin identity",
+      body: "The plugin receives environment-scoped OAuth credentials tied to its stable plugin ID.",
+    },
+    {
+      title: "Install the plugin",
+      body: "The platform creates a revocable installation context and sends the plugin only the public connection details it needs.",
+    },
+    {
+      title: "Platform calls plugin",
+      body: "The SDK checks the token signature, audience and scopes, then resolves the installation context.",
+    },
+    {
+      title: "Plugin calls platform",
+      body: "The ingress layer verifies the token and binds its plugin identity to the supplied installation context before creating a session.",
+    },
+  ]}
+  caption="The access token identifies the plugin. The context key identifies one installation."
+/>
+
+On install, the platform reads the plugin's public manifest to get its ID, version and capabilities. It creates an installation record and context key, configures the plugin as an OAuth audience if needed, then calls the plugin's install operation with the public API details and a JWKS endpoint. The SDK stores the installation, allowing one plugin service to handle requests for several installations.
+
+When the platform calls a plugin, it requests an access token with the plugin's ID as the audience. The token and context key go with the request. Before the plugin handler runs, the SDK retrieves the signing key from JWKS, verifies the signature and audience, checks the scopes declared by the OpenAPI operation, and loads the installation context.
+
+When the plugin calls back, the SDK obtains and caches an environment-specific machine token, then adds the token and context key to its generated REST or GraphQL client. The ingress service verifies the token and reads the plugin ID from a custom claim. It accepts the context key only when the stored plugin ID matches that claim. Once both checks pass, ingress builds the normal machine session and forwards the request to the API.
+
+Most of this code lives in the SDK rather than the Pylon plugin. The SDK handles token acquisition, caching, context propagation, JWKS validation and scope checks. Pylon registers its capabilities and handlers, then calls typed API clients with the context passed to the handler. Plugin authors do not need to rebuild the authentication middleware.
+
+**Why not generate one key per installation?**
+
+The simpler option was to generate a random API key during installation, give it to the plugin, and have both sides send it with every request. The key would identify the installation without the OAuth flow.
+
+The problem was replay. The same long-lived bearer key would cross the network on every request. Anyone who captured it could reuse it in either direction until the installation was revoked or the key was rotated. Using one key both ways would also make it harder to distinguish the platform from the plugin.
+
+OAuth keeps the long-lived client credentials out of normal API requests. Each side exchanges them for an expiring token with a specific audience, while the context key can be revoked separately. A captured token and matching context key remain usable until the token expires, so the expiry limits the replay window. Stopping replay completely would require proof-of-possession, such as signed requests with timestamps and nonces or mutual TLS.
+
+## What Went Well
+
+Separating plugin identity from installation context matched how the plugins were deployed. One plugin process could serve multiple environments and accounts without internal database access or infrastructure secrets. Each installation could still be revoked on its own.
+
+Plugin authors could work with familiar standards: OAuth 2.0, JWKS and OpenAPI. The API gateway verified calls into the platform, and the SDK enforced the plugin-facing contract. By the time the business logic ran, it already had a verified context. The Pylon integration used the same authentication path I had designed for future plugins.
+
+## What I'd Do Differently
+
+I would automate the plugin credential lifecycle earlier. The first version involved manual onboarding, even though registration, rotation and revocation fit naturally into a plugin registry and self-service tooling.
