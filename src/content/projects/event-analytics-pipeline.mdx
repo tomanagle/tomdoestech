@@ -1,6 +1,6 @@
 ---
 title: Event Analytics Pipeline
-description: A pipeline that lands Kafka events in S3, transforms them, and serves them for analytics, later re-platformed onto dbt and Snowflake.
+description: Re-platformed a Kafka-to-S3 analytics pipeline onto dbt and Snowflake, added PII redaction and cut dashboard queries from 60-120 seconds to seconds.
 role: Software developer
 company: Localz (Descartes)
 tech:
@@ -13,7 +13,7 @@ tech:
   - Snowflake
 period: "2020 - 2022"
 featured: true
-order: 1
+order: 2
 draft: false
 ---
 
@@ -21,7 +21,7 @@ import PipelineFlow from "../../components/diagrams/PipelineFlow.astro";
 
 ## Context & Background
 
-Localz had a microservices architecture where each service would emit it's own set of events to Kafka. There was a service that subscribed to all messages and piped them in to S3 with Kinesis Firehose, we called this the "dirty". The original design used AWS Glue to transform the data into a "clean" bucket that was queries with Athena. The issue was that the data was being displayed on a customer-facing dashboard and the queries would take 60-120 seconds to execute.
+Localz had a microservices architecture where each service emitted its own events to Kafka. A service subscribed to those messages and landed them in S3 through Kinesis Firehose; we called this the "dirty" bucket. The original design used AWS Glue to transform the data into a "clean" bucket queried with Athena. Because the results powered a customer-facing dashboard, query times of 60-120 seconds were too slow.
 
 <PipelineFlow
   sources={["Accounts API", "Feedback API", "Orders API"]}
@@ -45,9 +45,9 @@ Localz had a microservices architecture where each service would emit it's own s
 
 ## Implementation
 
-The Firehose to the dirty bucket infrastructure was solid, so we kept it. The only change that we made to that flow was to add a PII redactor so no PII made it into the lake.
+The Firehose-to-S3 infrastructure was solid, so we kept it and added a redactor to prevent PII from entering the data lake.
 
-After reviewing different vendors we landed on Snowflake as the warehouse provider and dbt as the transformation layer. We built a new pipeline that extracted the data from the dirty bucket, transformed it with dbt and loaded it into Snowflake.
+After reviewing different vendors, we chose Snowflake as the warehouse and dbt as the transformation layer. We built a new pipeline that extracted data from the dirty bucket, transformed it with dbt and loaded it into Snowflake.
 
 <PipelineFlow
   sources={["Accounts API", "Feedback API", "Orders API"]}
@@ -76,7 +76,7 @@ After reviewing different vendors we landed on Snowflake as the warehouse provid
 
 
 ## What Went Well
-Snowflake was a great choice, the large, complex queries executed in seconds rather than minutes. We could then use the data to surface more complicated insights, such as full customer journeys where the data came from several different services.
+Snowflake was a great choice: large, complex queries executed in seconds rather than minutes. We could then surface more sophisticated insights, including full customer journeys assembled from several services.
 
 ## What I'd Do Differently
-Glue turned out to be extremely expensive and slow for what we needed. If I was to implement this flow again I would look for tools outside the AWS ecosystem before just settling in familiar territory. 
+Glue turned out to be expensive and slow for what we needed. If I were implementing the original flow again, I would assess tools outside the AWS ecosystem before defaulting to familiar services.

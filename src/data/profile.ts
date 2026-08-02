@@ -54,10 +54,10 @@ export const profile: Profile = {
   email: "tomanagle@gmail.com",
   bio: {
     tagline:
-      "Tom Nagle is a senior software engineer building backends, data " +
-      "pipelines, and products, based on the Noosa, QLD.",
+      "Tom Nagle is a senior fullstack software engineer building cloud APIs, " +
+      "event-driven systems and data pipelines in Noosa, Queensland.",
     intro:
-      "I'm a senior software engineer with 10+ years of experience, the last seven at startups. I work across the full stack and I've led products from concept to delivery. I like getting involved early, working with product managers and designers to understand the problem before deciding what to build.",
+      "I'm a senior software engineer with 10+ years of experience, including seven years in startup and scale-up environments. I specialise in Go, TypeScript, API development and event-driven systems, and I've led products and platform capabilities from early discovery through to production. I enjoy working with product, design and engineering teams to turn ambiguous problems into scalable, secure and maintainable software.",
   },
   socials: [
     {
@@ -77,8 +77,39 @@ export const profile: Profile = {
     },
   ],
   techStack: [
-    { category: "Languages", items: ["TypeScript", "JavaScript", "Go"] },
-    { category: "Backend", items: ["Node.js", "Fastify", "GraphQL", "REST"] },
+    { category: "Languages", items: ["Go", "TypeScript", "JavaScript"] },
+    {
+      category: "Backend",
+      items: ["Node.js", "Fastify", "REST", "GraphQL", "OAuth 2.0"],
+    },
+    {
+      category: "Data & Messaging",
+      items: [
+        "Kafka",
+        "SQS",
+        "Kinesis Firehose",
+        "PostgreSQL",
+        "DynamoDB",
+        "MongoDB",
+        "Snowflake",
+        "dbt",
+      ],
+    },
+    {
+      category: "Cloud & Delivery",
+      items: [
+        "AWS",
+        "S3",
+        "Cloudflare",
+        "Workers",
+        "D1",
+        "KV",
+        "Queues",
+        "Docker",
+        "GitHub Actions",
+        "Playwright",
+      ],
+    },
     {
       category: "Frontend",
       items: [
@@ -87,25 +118,6 @@ export const profile: Profile = {
         "Tailwind CSS",
         "Tanstack query",
         "Tanstack router",
-      ],
-    },
-    {
-      category: "Data",
-      items: ["PostgreSQL", "MongoDB", "Kafka", "Snowflake", "dbt"],
-    },
-    {
-      category: "Cloud & DevOps",
-      items: [
-        "AWS",
-        "DynamoDB",
-        "SQS",
-        "Cloudflare",
-        "Workers",
-        "D1",
-        "KV",
-        "Queues",
-        "Docker",
-        "GitHub Actions",
       ],
     },
   ],
@@ -118,11 +130,13 @@ export const profile: Profile = {
           title: "Senior Software Engineer",
           period: "Feb 2024 - Present",
           highlights: [
-            "Led the technical design and development of major features across the Node.js/TypeScript backend, Go services and a Flutter app",
-            "Led the design of an external SDK, plugin system and key platform integrations",
-            "Led technical discussions and architectural designs",
-            "Designed, implemented and maintained complex workflows in Camunda",
-            "Develop and maintain E2E tests with Playwright",
+            "Lead the design and delivery of backend and platform capabilities across Go services, Node.js/TypeScript APIs and a Flutter application, from discovery through production",
+            "Designed an external SDK and plugin architecture supporting platform integrations and extensibility",
+            "Co-led a file-driven ingestion platform that unified 50,000+ products from two providers and enabled integrations with solar design and rebate platforms",
+            "Built a guardrailed rules engine used for hundreds of production rules and thousands of customer quotes, with no production incidents to date",
+            "Design and maintain business-critical Camunda workflows, participate in on-call, and support production incidents",
+            "Strengthen delivery and security with Playwright E2E tests, secure authentication and webhook validation",
+            "Work with product, design, subject-matter experts and engineers to turn ambiguous requirements into maintainable technical designs",
           ],
         },
       ],
@@ -135,11 +149,13 @@ export const profile: Profile = {
           title: "Senior Software Engineer",
           period: "Sep 2019 - Feb 2024",
           highlights: [
-            "Designed and built multi-tenant microservices in Go and Node.js/TypeScript on an event-driven architecture",
-            "Led a large customer-facing app in Next.js, GraphQL, and TypeScript",
-            "Re-platformed the Kafka-to-S3 analytics pipeline from Athena onto Snowflake and dbt",
-            "Built platform authentication in Go with OAuth 2.0",
-            "Led the design and implementation of a high-volume survey platform",
+            "Designed and built multi-tenant microservices in Go and Node.js/TypeScript on a Kafka- and AWS-based event-driven architecture",
+            "Built the multi-region authentication and authorisation service in Go with OAuth 2.0, working within data-sovereignty requirements",
+            "Built a Fastify and DynamoDB URL shortener that became the entry point for Click and Collect services at two of Australia's largest retailers",
+            "Added PII redaction and re-platformed a Kafka-to-S3 analytics pipeline from AWS Glue and Athena to Snowflake and dbt, cutting dashboard queries from 60-120 seconds to seconds",
+            "Led the design and delivery of a configurable feedback platform handling more than one million submissions per year, with results streamed through Kafka for real-time action and analytics",
+            "Led delivery of a large customer-facing Next.js, GraphQL and TypeScript application",
+            "Automated testing with Vitest, Jest, node-tap and Cypress",
           ],
         },
       ],
@@ -153,11 +169,10 @@ export const profile: Profile = {
           title: "Development Lead",
           period: "Jan 2019 - Jun 2019",
           highlights: [
-            "Led and coached developers, owning solution design and code reviews",
+            "Led and coached developers, owning solution design, implementation decisions and code reviews",
             "Designed and built GraphQL and REST APIs with Node.js, TypeScript, Apollo, Express, and MongoDB",
-            "Built React applications with Next.js, Redux, and Apollo GraphQL",
-            "Built an interactive event platform with a Salesforce integration",
-            "Established CI/CD with CircleCI and configured Ubuntu/Nginx servers",
+            "Built an interactive Next.js and GraphQL event platform used by thousands of delegates, with live feedback, networking and content synced from Salesforce",
+            "Established CircleCI-based CI/CD and configured Ubuntu/Nginx production servers",
           ],
         },
         {

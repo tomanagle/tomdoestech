@@ -9,7 +9,7 @@ tech:
   - PostgreSQL
 period: "2024"
 featured: true
-order: 1
+order: 6
 draft: false
 ---
 
@@ -33,7 +33,7 @@ A lot of the work went into the parts you don't see: the guardrails that keep op
 
 ## What Went Well
 
-One of the rule types allowed the operator to write equations that return boolean values "should this SKU be added to the BOM?" and values "how many of this SKU should be added?". The engine was a simple interpreter that took in context from the solar design and the current BOM as the time of the execution. Because the syntax was strict and it only had 2 return types, writing the equations was simple enough for a non-developer, but made the engine much more flexible.
+One rule type let operators write equations that returned either a boolean ("should this SKU be added to the BOM?") or a number ("how many should be added?"). A simple interpreter evaluated them against the solar design and the current BOM at execution time. The strict syntax and two return types kept the equations approachable for non-developers while making the engine much more flexible.
 
 ## What I'd Do Differently
-The rules ended up being imperative: each rule type was a different way of telling the engine what to do, so an operator had to pick the right type before they could write anything, I'd make them declarative instead. A single rule format that holds all the building blocks (how components relate to each other and the conditions that apply) so operators just describe the rule they want and the engine works out how to run it. It would have been simpler to learn and simpler to extend, without adding a new rule type every time we needed something new.
+The rules ended up being imperative: each rule type was a different way of telling the engine what to do, so an operator had to choose the right type before writing anything. I would make them declarative instead, using one format that holds the relationships and conditions. Operators could describe the outcome they want and let the engine determine how to run it. That would be easier to learn and extend without adding a new rule type for every new use case.
