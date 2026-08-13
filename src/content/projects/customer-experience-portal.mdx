@@ -1,9 +1,9 @@
 ---
 title: Customer Experience Portal
-description: A customer experience portal that supports the solar system checkout and installation journey
+description: A customer portal for the solar system checkout and installation journey.
 role: Lead engineer
-company: "UPowr" # must be one of src/data/companies.ts
-tech: # each must be one of src/data/technologies.ts
+company: "UPowr"
+tech:
   - TypeScript
   - Node.js
   - React.js
@@ -17,20 +17,20 @@ draft: false
 
 ## Context & Background
 
-When customers purchase a solar system, battery or EV charger, they need to understand the system they are purchasing, understand the available rebates & loans and track the installation process. The existing portal was split across two applications, one Vue 2 and one Nuxt, and did not clearly communicate the information to the customer.
+When customers purchase a solar system, battery or EV charger, they need details about what they are buying, which rebates and loans apply, and how the installation is progressing. The existing portal was split across two applications, one Vue 2 and one Nuxt, and did not explain that information clearly.
 
-In this project I worked with a Subject Matter Expert (SME) and a designer to build a new customer experience portal that would provide a single source of truth for customers to track their solar system checkout and installation journey.
+I worked with a subject matter expert (SME) and a designer to put the checkout and installation journey in one portal.
 
 ## Implementation
 
-To keep the transition from the old portal to the new portal as smooth as possible, we decided to use the existing APIs and expand on them where required, keeping them backwards compatible. I built the portal using Vite, React, Tanstack router and Tanstack query.
+We kept the existing APIs and extended them where required without breaking the old portal. I built the new portal using Vite, React, Tanstack Router and Tanstack Query.
 
-Because the portal is a key part of the business, to de-risk the launch I implemented a feature flag that allowed the operator to define what share of new customers would get the old or the new portal. This meant that we could roll the portal out to a pool of randomly selected customers and have the customers continue to use the same version of the portal for the duration of their journey, without any disruption.
+Because the portal is a key part of the sales process, I added a feature flag that let operators choose what share of new customers received each version. We could start with a randomly selected group, and each customer stayed on the same version for the rest of their journey.
 
-To support the feature flag, I also implemented some operator tooling that allowed the operator to see which version of the portal a customer was using and change it if required.
+I also built operator tooling to show which version a customer was using and switch them when required.
 
 ## What Went Well
 
-The new portal created a seamless experience for customers. It communicated what information they needed before signing the contract and what was going to happen to get their system installed.
+The new portal put the contract requirements and installation process in one place, so customers could see what they needed to provide and what would happen next.
 
-The new portal also has modular checkout components that allow us to easily implement new government loans and rebates as they become available.
+Its checkout components are modular, so new government loans and rebates can be added without rebuilding the rest of checkout.

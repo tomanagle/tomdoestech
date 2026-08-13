@@ -23,7 +23,7 @@ Encoding all of that in application code would have meant a constant maintenance
 
 I worked with a product owner and another senior engineer to grow this from a single kind of rule into a rules engine that non-developers could safely author against. The people who own the pricing and BOM logic can define their own rules, and the engine applies them to a design to produce the bill of materials, rather than that logic being hard-coded by engineers.
 
-A lot of the work went into the parts you don't see: the guardrails that keep operator-authored rules safe to run, and an execution model that applies rules in a predictable order so they compose together correctly.
+Most of the work went into guardrails that keep operator-authored rules safe to run and an execution model that applies them in a predictable order.
 
 ## Outcomes
 
@@ -33,7 +33,7 @@ A lot of the work went into the parts you don't see: the guardrails that keep op
 
 ## What Went Well
 
-One rule type let operators write equations that returned either a boolean ("should this SKU be added to the BOM?") or a number ("how many should be added?"). A simple interpreter evaluated them against the solar design and the current BOM at execution time. The strict syntax and two return types kept the equations approachable for non-developers while making the engine much more flexible.
+One rule type let operators write equations that returned either a boolean ("should this SKU be added to the BOM?") or a number ("how many should be added?"). A simple interpreter evaluated them against the solar design and the current BOM at execution time. The strict syntax kept the equations approachable for non-developers, while the two return types let one rule express both conditions and quantities.
 
 ## What I'd Do Differently
 The rules ended up being imperative: each rule type was a different way of telling the engine what to do, so an operator had to choose the right type before writing anything. I would make them declarative instead, using one format that holds the relationships and conditions. Operators could describe the outcome they want and let the engine determine how to run it. That would be easier to learn and extend without adding a new rule type for every new use case.

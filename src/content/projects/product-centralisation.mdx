@@ -1,6 +1,6 @@
 ---
 title: Product centralisation
-description: "A single, unified product catalog that ingests and merges thousands of products from multiple providers, so each product stays identifiable across every integration."
+description: "A product catalog that merges thousands of provider records while keeping each product identifiable across integrations."
 role: Lead engineer
 company: UPowr
 tech:
@@ -24,21 +24,21 @@ Before this, all of that was fragmented. Pricing, technical specifications and a
 
 I co-led the design and build with two other senior engineers, working closely with a product owner.
 
-At the core is a document-oriented data model: each product is a single document that can represent one or more provider products merged together. To make that work we built a mapping dialect, a small language for describing how a given provider's fields map onto our product, so a product from any source could be stored as one entity. PostgreSQL sat in front of the documents as a search cache, with full-text search and pgvector for similarity search.
+Each product is a single document that can represent records from one or more providers. We built a mapping dialect, a small language that describes how a provider's fields map onto our product, so records from any source could be stored as one entity. PostgreSQL sat in front of the documents as a search cache, with full-text search and pgvector for similarity search.
 
 The ingestion pipeline was file-driven. Providers' files landed in an S3 bucket, the system worked out which files were new or changed, and it updated the database from there. A single product could be assembled from several source files merged together, so the merged record carried references back to every source it came from. Local edits were handled by treating "local" as just another source and merging it in last, so a local change would override anything a provider supplied.
 
-The interesting decision was matching: working out when two providers' products are actually the same product. We prototyped an AI approach, using a blocking strategy to cut down the number of comparisons and an agent that returned a match score for each candidate pair. We didn't ship it. With human review it would have been too slow and too expensive at our data size, and we didn't need the catalog to be perfect, just good enough to enable integrations. So we went with a simpler deterministic approach, normalising brands and matching models, and accepted that there would be some duplicates.
+Matching was the harder design decision: working out when two providers' records describe the same product. We prototyped an AI approach, using a blocking strategy to cut down the number of comparisons and an agent that returned a match score for each candidate pair. We didn't ship it. Human review would have been too slow and expensive at our data size, and integrations could still work with some duplicates in the catalog. We chose a simpler deterministic approach that normalised brands and matched models.
 
 ## Outcomes
 
 - Automated away the manual, multi-step process of making new hardware available.
 - Unified 50,000+ products from two providers into a single catalog.
-- Enabled key integrations with other solar design platforms and rebate providers.
+- Enabled integrations with other solar design platforms and rebate providers.
 
 ## What Went Well
 
-The mapping dialect was the part that paid off most. Storing products from different providers as a single entity, described declaratively, made the catalog much easier to manage and to search across integrations.
+The mapping dialect let us store records from different providers as one entity without writing provider-specific application logic for every field. That made the catalog easier to manage and search across integrations.
 
 ## What I'd Do Differently
 

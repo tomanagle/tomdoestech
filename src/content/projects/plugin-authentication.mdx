@@ -65,7 +65,7 @@ When the plugin calls back, the SDK obtains and caches an environment-specific m
 
 Most of this code lives in the SDK rather than the Pylon plugin. The SDK handles token acquisition, caching, context propagation, JWKS validation and scope checks. Pylon registers its capabilities and handlers, then calls typed API clients with the context passed to the handler. Plugin authors do not need to rebuild the authentication middleware.
 
-**Why not generate one key per installation?**
+### Why not generate one key per installation?
 
 The simpler option was to generate a random API key during installation, give it to the plugin, and have both sides send it with every request. The key would identify the installation without the OAuth flow.
 

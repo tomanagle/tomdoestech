@@ -24,7 +24,7 @@ A few things made it more than a simple form builder. Negative feedback had to b
 
 I led the design and build, working with a product owner.
 
-Forms were made up of a small set of question types (text, multiple choice, rating). Behind them was a versioned schema that mapped question IDs to labels, so when a form changed, old results could still be interpreted against the version they were captured under. Nothing was lost when the questions changed.
+Forms were made up of a small set of question types (text, multiple choice, rating). Behind them was a versioned schema that mapped question IDs to labels, so when a form changed, old results could still be interpreted against the version they were captured under.
 
 The API was GraphQL in TypeScript, handling both the forms and the results. I built the form renderer as a React component so the same renderer could be embedded in different customer portals and reused to power a live preview in the configuration UI. That meant whoever configured a form saw exactly what the customer would see.
 
@@ -36,7 +36,7 @@ Completed results were published as debounced Kafka events into the [data pipeli
 - In use by major brands.
 - A 15-45% feedback rate, depending on the brand.
 - Negative feedback could be actioned in real time.
-- Gave teams better signal for future product and service improvements.
+- Gave teams submission data for product and service planning.
 
 ## What Went Well
 
