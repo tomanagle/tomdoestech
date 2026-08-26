@@ -56,7 +56,7 @@ export const profile: Profile = {
     tagline:
       "Tom Nagle is a senior full-stack software engineer based in Noosa, Queensland.",
     intro:
-      "Senior software engineer with 10+ years of experience in B2B SaaS. I work across the full stack and product lifecycle, from early ideas through to production and ongoing maintenance. I enjoy owning complex problems, making pragmatic technical decisions and shipping reliable software.",
+      "Senior software engineer with 10+ years of experience building B2B SaaS products with Go, TypeScript, React.js and PostgreSQL. I own features end to end, from shaping requirements and technical design through implementation, deployment and production support.",
   },
   socials: [
     {
